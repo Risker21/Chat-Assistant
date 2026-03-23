@@ -1,11 +1,18 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from langchain.agents import create_agent
 from my_llm import deepseek_llm, dashscope_llm, zhipu_llm, hunyuan_llm
 import time
 import hashlib
+import os
 
 app = FastAPI()
+
+# 挂载静态文件目录
+app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/img", StaticFiles(directory="img"), name="img")
 
 # 配置 CORS
 app.add_middleware(
@@ -105,7 +112,7 @@ async def chat(request: Request):
 
 @app.get("/")
 async def root():
-    return {"message": "智能聊天机器人 API"}
+    return FileResponse(os.path.join("static", "index.html"))
 
 @app.get("/models")
 async def get_models():
