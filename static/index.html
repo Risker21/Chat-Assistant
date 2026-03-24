@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/jpg" href="../img/favicon.jpg">
     <title>智能聊天机器人</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -70,7 +70,7 @@
             }
         }
     </script>
-    
+
     <style type="text/tailwindcss">
         @layer utilities {
             .scrollbar-hide {
@@ -129,7 +129,7 @@
             .markdown-body th {
                 @apply bg-gray-100 dark:bg-gray-700 font-semibold;
             }
-            
+
             .typing-dot {
                 animation: typing 1.4s infinite ease-in-out both;
             }
@@ -172,18 +172,44 @@
             .dark .glass {
                 background: rgba(26, 26, 46, 0.8);
             }
+            
+            @keyframes float {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+            }
+            .animate-float {
+                animation: float 3s ease-in-out infinite;
+            }
+            
+            @keyframes gradient {
+                0%, 100% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+            }
+            .animate-gradient {
+                animation: gradient 8s ease infinite;
+            }
+            .bg-size-200 {
+                background-size: 200% 200%;
+            }
         }
-    </style>
+        </style>
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-violet-50 dark:from-dark-bg dark:to-violet-950/30 text-gray-800 dark:text-dark-text min-h-screen flex flex-col transition-colors duration-500">
-    
+
     <!-- 背景装饰 -->
     <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div class="absolute top-0 left-1/4 w-96 h-96 bg-violet-400/20 dark:bg-violet-600/10 rounded-full blur-3xl animate-pulse-slow"></div>
-        <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 1s;"></div>
-        <div class="absolute top-1/2 right-1/3 w-64 h-64 bg-pink-400/15 dark:bg-pink-600/10 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 2s;"></div>
+        <!-- 动态渐变背景 -->
+        <div class="absolute inset-0 bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-dark-bg dark:to-violet-950/30 transition-colors duration-1000"></div>
+        
+        <!-- 动态光斑效果 -->
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-violet-400/20 dark:bg-violet-600/10 rounded-full blur-3xl animate-pulse-slow animate-float"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-3xl animate-pulse-slow animate-float" style="animation-delay: 1s;"></div>
+        <div class="absolute top-1/2 right-1/3 w-64 h-64 bg-pink-400/15 dark:bg-pink-600/10 rounded-full blur-3xl animate-pulse-slow animate-float" style="animation-delay: 2s;"></div>
+        
+        <!-- 网格背景 -->
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtMS4zNiAwLTIuNC45NC0yLjQgMi4yNGMwIDEuMzYuOTggMi40IDIuNCAyLjRsMTMuNjQgMS4xN2MtMS4xNi42OC0yLjQ4IDEuMS0zLjk0IDEuMWMtMy41OSAwLTYuNS0yLjkyLTYuNS02LjUycy45Mi0yLjUgMi41LTQuMDggMy44MS01LjE3IDEuMTgtMS4xMiAyLjU5LTEuODcgNC4xMy0yLjI1IDMuMTQtLjc2IDYuOTQuMzggOC44IDEuMTIgMS44My43MyA0LjA0IDEuMjggNi40IDEuMjhzNi41LTIuOTIgNi41LTYuNTJzLS45Mi0yLjUtMi41LTQuMDgtMy44MS01LjE3LTEuMTgtMS4xMi0yLjU5LTEuODctNC4xMy0yLjI1LTMuMTQtLjc2LTYuOTQuMzgtOC44IDEuMTItMS44My43My00LjA0IDEuMjgtNi40IDEuMjh6IiBzdHJva2U9IiM4OGUyZmMiIHN0cm9rZS13aWR0aD0iLjUiLz48L2c+PC9zdmc+')] opacity-50 dark:opacity-20"></div>
     </div>
-    
+
     <!-- 顶部导航栏 -->
     <header class="glass sticky top-0 z-50 border-b border-gray-200/50 dark:border-dark-border/50 transition-all duration-300">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
@@ -200,78 +226,84 @@
                     <p class="text-xs text-gray-500 dark:text-gray-400 -mt-0.5">随时为您效劳</p>
                 </div>
             </div>
-            
+
             <div class="flex items-center space-x-2 sm:space-x-4">
-                <div class="relative group">
-                    <div class="flex items-center bg-white dark:bg-dark-card rounded-xl px-3 py-1.5 border border-gray-200 dark:border-dark-border shadow-sm hover:shadow-md transition-all duration-200">
-                        <div class="pl-2 pr-3 py-1 text-sm font-medium text-gray-500 dark:text-gray-400">
-                            <i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-violet-500"></i>
-                        </div>
-                        <select id="model-select" class="appearance-none bg-transparent font-semibold text-gray-800 dark:text-white pl-1 pr-7 py-1.5 focus:outline-none cursor-pointer text-sm rounded-lg">
-                            <option value="deepseek" class="text-gray-900">Ethan</option>
+            <div class="relative group">
+                <div class="flex items-center bg-white dark:bg-dark-card rounded-xl px-3 py-1.5 border border-gray-200 dark:border-dark-border shadow-sm hover:shadow-md transition-all duration-200 backdrop-blur-sm">
+                    <div class="pl-2 pr-3 py-1 text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-violet-500 animate-pulse-slow"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 mr-3">角色选择</span>
+                    <select id="model-select" class="appearance-none bg-transparent font-semibold text-gray-800 dark:text-white pl-1 pr-7 py-1.5 focus:outline-none cursor-pointer text-sm rounded-lg">
+                            <option value="deepseek" class="text-gray-900">Zoe</option>
+                            <option value="hunyuan" class="text-gray-900">Ethan</option>
                             <option value="qwen" class="text-gray-900">Luna</option>
                             <option value="glm" class="text-gray-900">Felix</option>
-                            <option value="hunyuan" class="text-gray-900">Zoe</option>
                         </select>
-                        <i class="fa-solid fa-chevron-down absolute right-3 text-xs text-gray-400 pointer-events-none"></i>
-                    </div>
-                    
-                    <div class="absolute top-full right-0 mt-3 w-72 bg-white dark:bg-dark-card rounded-2xl shadow-2xl border border-gray-100 dark:border-dark-border/50 p-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100 z-50">
-                        <div class="flex items-center space-x-3 mb-3">
-                            <div id="model-icon-bg" class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
-                                <i id="model-icon" class="fa-solid fa-square-root-variable text-white"></i>
-                            </div>
-                            <div>
-                                <h4 id="model-title" class="font-bold text-gray-900 dark:text-white">Ethan</h4>
-                                <p class="text-xs text-violet-500 font-medium">在线</p>
-                            </div>
-                        </div>
-                        <p id="model-description" class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                            数学大师：精通各种数学问题，包括代数、几何、微积分等各个领域。
-                        </p>
-                    </div>
+                    <i class="fa-solid fa-chevron-down absolute right-3 text-xs text-gray-400 pointer-events-none transition-transform duration-300 group-hover:rotate-180"></i>
                 </div>
-                
-                <div class="flex items-center space-x-1 border-l border-gray-200 dark:border-gray-700 pl-2 sm:pl-4">
-                    <button id="theme-toggle" class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400 hover:bg-white dark:hover:bg-dark-card shadow-sm hover:shadow-md transition-all duration-200" title="切换主题">
-                        <i class="fa-solid fa-moon text-lg"></i>
-                    </button>
-                    <button id="clear-chat" class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:text-rose-600 dark:text-gray-400 dark:hover:text-rose-400 hover:bg-white dark:hover:bg-dark-card shadow-sm hover:shadow-md transition-all duration-200" title="清除对话">
-                        <i class="fa-solid fa-trash-can text-lg"></i>
-                    </button>
+
+                <div class="absolute top-full right-0 mt-3 w-72 bg-white dark:bg-dark-card rounded-2xl shadow-2xl border border-gray-100 dark:border-dark-border/50 p-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100 z-50 backdrop-blur-sm">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div id="model-icon-bg" class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md animate-float">
+                            <i id="model-icon" class="fa-solid fa-square-root-variable text-white"></i>
+                        </div>
+                        <div>
+                            <h4 id="model-title" class="font-bold text-gray-900 dark:text-white">Ethan</h4>
+                            <p class="text-xs text-violet-500 font-medium flex items-center">
+                                <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse mr-1.5"></span>
+                                在线
+                            </p>
+                        </div>
+                    </div>
+                    <p id="model-description" class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                        数学大师：精通各种数学问题，包括代数、几何、微积分等各个领域。
+                    </p>
                 </div>
             </div>
+
+            <div class="flex items-center space-x-1 border-l border-gray-200 dark:border-gray-700 pl-2 sm:pl-4">
+                <button id="theme-toggle" class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400 hover:bg-white dark:hover:bg-dark-card shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-110" title="切换主题">
+                    <i class="fa-solid fa-moon text-lg"></i>
+                </button>
+                <button id="clear-chat" class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:text-rose-600 dark:text-gray-400 dark:hover:text-rose-400 hover:bg-white dark:hover:bg-dark-card shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-110" title="清除对话">
+                    <i class="fa-solid fa-trash-can text-lg"></i>
+                </button>
+            </div>
+        </div>
         </div>
     </header>
 
     <!-- 主要聊天区域 -->
     <main class="flex-grow flex flex-col relative w-full max-w-4xl mx-auto">
         <div id="toast-container" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
-        
+
         <button id="scroll-bottom-btn" class="absolute bottom-28 right-4 sm:right-6 w-12 h-12 bg-white dark:bg-dark-card rounded-full shadow-lg border border-gray-200 dark:border-dark-border flex items-center justify-center text-violet-500 hover:text-violet-600 hover:scale-110 transition-all opacity-0 invisible z-20">
             <i class="fa-solid fa-arrow-down text-lg"></i>
         </button>
 
         <!-- 聊天历史 -->
         <div id="chat-history" class="flex-grow overflow-y-auto px-4 py-8 space-y-6 scroll-smooth scrollbar-custom">
-            
+
             <!-- 欢迎界面 -->
             <div id="welcome-screen" class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
                 <div class="relative mb-8">
-                    <div class="w-24 h-24 bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-violet-500/30">
+                    <div class="w-24 h-24 bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-violet-500/30 animate-float">
                         <i class="fa-solid fa-robot text-white text-4xl"></i>
                     </div>
+                    <!-- 环绕光效 -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-violet-500 to-indigo-600 rounded-3xl blur-md opacity-30 animate-pulse-slow"></div>
                 </div>
-                
-                <h2 class="text-3xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400">
+
+                <h2 class="text-3xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400 animate-gradient bg-size-200">
                     你好，我是你的 AI 助手
                 </h2>
-                <p class="text-gray-500 dark:text-gray-400 max-w-lg mx-auto mb-10 text-base leading-relaxed">
+                <p class="text-gray-500 dark:text-gray-400 max-w-lg mx-auto mb-10 text-base leading-relaxed animate-fade-in-up" style="animation-delay: 0.2s;">
                     我能帮你解答问题、编写代码、分析数据，或者进行随意的闲聊。试试下方推荐，开启智能对话之旅吧！
                 </p>
-                
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-3xl">
-                    <button class="suggestion-btn group text-left p-5 rounded-2xl bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border hover:border-violet-400 dark:hover:border-violet-500 shadow-sm hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 transform hover:-translate-y-1">
+                    <button class="suggestion-btn group text-left p-5 rounded-2xl bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border hover:border-violet-400 dark:hover:border-violet-500 shadow-sm hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.3s;">
                         <div class="flex items-center space-x-3 mb-2">
                             <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <i class="fa-solid fa-code text-blue-500"></i>
@@ -280,8 +312,8 @@
                         </div>
                         <p class="text-sm text-gray-500 dark:text-gray-400 pl-[3.25rem]">帮我写一个用 Python 实现的快速排序算法</p>
                     </button>
-                    
-                    <button class="suggestion-btn group text-left p-5 rounded-2xl bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border hover:border-violet-400 dark:hover:border-violet-500 shadow-sm hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 transform hover:-translate-y-1">
+
+                    <button class="suggestion-btn group text-left p-5 rounded-2xl bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border hover:border-violet-400 dark:hover:border-violet-500 shadow-sm hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.4s;">
                         <div class="flex items-center space-x-3 mb-2">
                             <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <i class="fa-solid fa-calculator text-emerald-500"></i>
@@ -290,8 +322,8 @@
                         </div>
                         <p class="text-sm text-gray-500 dark:text-gray-400 pl-[3.25rem]">解释一下什么是微积分中的极限概念</p>
                     </button>
-                    
-                    <button class="suggestion-btn group text-left p-5 rounded-2xl bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border hover:border-violet-400 dark:hover:border-violet-500 shadow-sm hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 transform hover:-translate-y-1">
+
+                    <button class="suggestion-btn group text-left p-5 rounded-2xl bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border hover:border-violet-400 dark:hover:border-violet-500 shadow-sm hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.5s;">
                         <div class="flex items-center space-x-3 mb-2">
                             <div class="w-10 h-10 bg-pink-100 dark:bg-pink-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <i class="fa-solid fa-heart text-pink-500"></i>
@@ -300,8 +332,8 @@
                         </div>
                         <p class="text-sm text-gray-500 dark:text-gray-400 pl-[3.25rem]">我最近工作压力很大，感到很焦虑怎么办？</p>
                     </button>
-                    
-                    <button class="suggestion-btn group text-left p-5 rounded-2xl bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border hover:border-violet-400 dark:hover:border-violet-500 shadow-sm hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 transform hover:-translate-y-1">
+
+                    <button class="suggestion-btn group text-left p-5 rounded-2xl bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border hover:border-violet-400 dark:hover:border-violet-500 shadow-sm hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.6s;">
                         <div class="flex items-center space-x-3 mb-2">
                             <div class="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <i class="fa-solid fa-yin-yang text-amber-500"></i>
@@ -318,29 +350,29 @@
         <!-- 底部输入区域 -->
         <div class="p-4 sm:p-6 bg-gradient-to-t from-gray-50/80 to-transparent dark:from-dark-bg/80 backdrop-blur-sm">
             <div class="max-w-4xl mx-auto relative">
-                <form id="chat-form" class="relative bg-white dark:bg-dark-card rounded-3xl shadow-xl dark:shadow-2xl dark:shadow-violet-500/5 border border-gray-200 dark:border-dark-border/50 flex flex-col transition-all duration-300 focus-within:ring-2 focus-within:ring-violet-500/50 focus-within:border-violet-400">
-                    <textarea id="message-input" rows="1" placeholder="输入消息..." 
+                <form id="chat-form" class="relative bg-white dark:bg-dark-card rounded-3xl shadow-xl dark:shadow-2xl dark:shadow-violet-500/5 border border-gray-200 dark:border-dark-border/50 flex flex-col transition-all duration-300 focus-within:ring-2 focus-within:ring-violet-500/50 focus-within:border-violet-400 transform hover:shadow-2xl hover:shadow-violet-500/10">
+                    <textarea id="message-input" rows="1" placeholder="输入消息..."
                            class="w-full bg-transparent px-6 py-4 max-h-40 min-h-[60px] resize-none focus:outline-none text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 scrollbar-hide text-base leading-relaxed"
                            style="overflow-y: hidden;"></textarea>
-                    
+
                     <div class="flex justify-between items-center px-4 pb-4 pt-1">
                         <div class="text-xs text-gray-400 dark:text-gray-500 pl-2 hidden sm:flex items-center space-x-1">
-                            <span class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg text-[10px] border border-gray-200 dark:border-gray-700">Enter</span>
+                            <span class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg text-[10px] border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Enter</span>
                             <span>发送</span>
                             <span class="mx-1 opacity-40">|</span>
-                            <span class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg text-[10px] border border-gray-200 dark:border-gray-700">Shift + Enter</span>
+                            <span class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg text-[10px] border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Shift + Enter</span>
                             <span>换行</span>
                         </div>
-                        <button type="button" id="stop-btn" class="hidden w-11 h-11 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-900/20 dark:hover:bg-rose-900/40 text-rose-500 flex items-center justify-center transition-all duration-300 ml-auto border border-rose-200 dark:border-rose-800/50 hover:scale-105" title="停止生成">
+                        <button type="button" id="stop-btn" class="hidden w-11 h-11 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-900/20 dark:hover:bg-rose-900/40 text-rose-500 flex items-center justify-center transition-all duration-300 ml-auto border border-rose-200 dark:border-rose-800/50 hover:scale-105 hover:shadow-md" title="停止生成">
                             <i class="fa-solid fa-stop text-sm"></i>
                         </button>
-                        <button type="submit" id="send-btn" class="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 text-white flex items-center justify-center transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-violet-500/30 disabled:shadow-none ml-auto transform active:scale-95 hover:scale-105 disabled:hover:scale-100">
-                            <i class="fa-solid fa-paper-plane text-sm"></i>
+                        <button type="submit" id="send-btn" class="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 text-white flex items-center justify-center transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-violet-500/30 disabled:shadow-none ml-auto transform active:scale-95 hover:scale-105 disabled:hover:scale-100 hover:shadow-xl hover:shadow-violet-500/40">
+                            <i class="fa-solid fa-paper-plane text-sm transform hover:rotate-45 transition-transform"></i>
                         </button>
                     </div>
                 </form>
-                <div class="text-center mt-4 text-[11px] text-gray-400 dark:text-gray-500 flex items-center justify-center space-x-1">
-                    <i class="fa-solid fa-shield-halved"></i>
+                <div class="text-center mt-4 text-[11px] text-gray-400 dark:text-gray-500 flex items-center justify-center space-x-1 animate-fade-in-up">
+                    <i class="fa-solid fa-shield-halved text-violet-500"></i>
                     <span>AI 可能会产生不准确的信息，请仔细核查。</span>
                 </div>
             </div>
@@ -348,6 +380,7 @@
     </main>
 
     <script>
+
         marked.setOptions({
             highlight: function(code, lang) {
                 if (lang && hljs.getLanguage(lang)) {
@@ -377,13 +410,13 @@
         const suggestionBtns = document.querySelectorAll('.suggestion-btn');
         const toastContainer = document.getElementById('toast-container');
         const scrollBottomBtn = document.getElementById('scroll-bottom-btn');
-        
+
         const modelInfos = {
             'deepseek': {
-                title: '数学天才',
-                desc: '数学大师：精通各种数学问题，包括代数、几何、微积分等各个领域。',
-                bg: 'bg-gradient-to-br from-blue-500 to-indigo-600',
-                icon: 'fa-square-root-variable'
+                title: '暖心搭子',
+                desc: '聊天打字专家：擅长日常聊天和交流，能够自然、流畅地与用户进行对话。',
+                bg: 'bg-gradient-to-br from-amber-500 to-orange-500',
+                icon: 'fa-comments'
             },
             'qwen': {
                 title: '疗愈情感',
@@ -398,25 +431,25 @@
                 icon: 'fa-yin-yang'
             },
             'hunyuan': {
-                title: '暖心搭子',
-                desc: '聊天打字专家：擅长日常聊天和交流，能够自然、流畅地与用户进行对话。',
-                bg: 'bg-gradient-to-br from-amber-500 to-orange-500',
-                icon: 'fa-comments'
+                title: '数学天才',
+                desc: '数学大师：精通各种数学问题，包括代数、几何、微积分等各个领域。',
+                bg: 'bg-gradient-to-br from-blue-500 to-indigo-600',
+                icon: 'fa-square-root-variable'
             }
         };
 
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             const icon = type === 'success' ? 'fa-circle-check text-green-500' : 'fa-circle-exclamation text-red-500';
-            toast.className = `bg-white dark:bg-dark-card border border-gray-200 dark:border-gray-700 shadow-xl rounded-2xl px-5 py-3 flex items-center space-x-3 animate-fade-in-up transition-opacity duration-300`;
+            toast.className = `bg-white dark:bg-dark-card border border-gray-200 dark:border-gray-700 shadow-xl rounded-2xl px-5 py-3 flex items-center space-x-3 animate-fade-in-up transition-all duration-300 transform hover:scale-105`;
             toast.innerHTML = `
                 <i class="fa-solid ${icon} text-lg"></i>
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-200">${message}</span>
             `;
             toastContainer.appendChild(toast);
-            
+
             setTimeout(() => {
-                toast.classList.add('opacity-0');
+                toast.classList.add('opacity-0', 'translate-y-4');
                 setTimeout(() => toast.remove(), 300);
             }, 2000);
         }
@@ -426,10 +459,10 @@
                 const txt = document.createElement("textarea");
                 txt.innerHTML = encodedText;
                 const text = txt.value;
-                
+
                 await navigator.clipboard.writeText(text);
                 showToast('已复制到剪贴板');
-                
+
                 const icon = btnElement.querySelector('i');
                 const oldClass = icon.className;
                 icon.className = 'fa-solid fa-check text-green-500';
@@ -477,6 +510,7 @@
 
         let currentAbortController = null;
         let isTyping = false;
+        let conversationHistory = [];
 
         chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -493,6 +527,8 @@
             stopBtn.classList.remove('hidden');
             messageInput.disabled = true;
 
+            // 添加用户消息到历史记录
+            conversationHistory.push({ role: 'user', content: message });
             addMessageToHistory('user', message);
 
             const loadingId = addLoadingMessage();
@@ -505,7 +541,11 @@
                 const response = await fetch('/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message, model: selectedModel }),
+                    body: JSON.stringify({ 
+                        message, 
+                        model: selectedModel,
+                        history: conversationHistory
+                    }),
                     signal: currentAbortController.signal
                 });
 
@@ -513,13 +553,15 @@
 
                 const data = await response.json();
                 
+                // 添加AI回复到历史记录
+                conversationHistory.push({ role: 'assistant', content: data.response });
                 removeLoadingMessage(loadingId);
                 addMessageToHistory('bot', data.response, true);
-                
+
             } catch (error) {
                 console.error('错误:', error);
                 removeLoadingMessage(loadingId);
-                
+
                 if (error.name === 'AbortError') {
                     showToast('已停止生成', 'success');
                     resetInputState();
@@ -556,18 +598,18 @@
         function addMessageToHistory(sender, message, useTypeWriter = false, isError = false) {
             const messageDiv = document.createElement('div');
             messageDiv.className = 'flex w-full animate-fade-in-up group';
-            
+
             if (sender === 'bot') {
                 const modelInfo = modelInfos[modelSelect.value];
                 const avatarBg = isError ? 'bg-gradient-to-br from-rose-500 to-red-600' : modelInfo.bg;
                 const avatarIcon = isError ? 'fa-triangle-exclamation' : modelInfo.icon;
-                
+
                 const escapedMessage = message.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                
+
                 messageDiv.innerHTML = `
                     <div class="flex max-w-3xl w-full">
                         <div class="flex-shrink-0 mr-4">
-                            <div class="w-10 h-10 ${avatarBg} rounded-2xl flex items-center justify-center shadow-lg text-white transform hover:scale-110 transition-transform duration-200">
+                            <div class="w-10 h-10 ${avatarBg} rounded-2xl flex items-center justify-center shadow-lg text-white transform hover:scale-110 transition-transform duration-200 animate-float">
                                 <i class="fa-solid ${avatarIcon} text-sm"></i>
                             </div>
                         </div>
@@ -577,11 +619,11 @@
                                     <span>${modelInfo.title}</span>
                                     <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
                                 </span>
-                                <button data-clipboard-text="${escapedMessage}" onclick="copyToClipboard(this.getAttribute('data-clipboard-text'), this)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-all p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800" title="复制回答">
+                                <button data-clipboard-text="${escapedMessage}" onclick="copyToClipboard(this.getAttribute('data-clipboard-text'), this)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-all p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transform hover:scale-110" title="复制回答">
                                     <i class="fa-regular fa-copy text-sm"></i>
                                 </button>
                             </div>
-                            <div class="bg-white dark:bg-dark-card rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm border border-gray-100 dark:border-dark-border/50 message-content markdown-body text-gray-800 dark:text-gray-200" ${useTypeWriter ? 'style="opacity: 0"' : ''}>
+                            <div class="bg-white dark:bg-dark-card rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm border border-gray-100 dark:border-dark-border/50 message-content markdown-body text-gray-800 dark:text-gray-200 hover:shadow-md transition-all duration-300" ${useTypeWriter ? 'style="opacity: 0"' : ''}>
                                 ${useTypeWriter ? '' : parseMarkdown(message)}
                             </div>
                         </div>
@@ -591,13 +633,13 @@
                 messageDiv.innerHTML = `
                     <div class="flex max-w-3xl w-full justify-end ml-auto">
                         <div class="flex-grow min-w-0 pt-1 mr-4 flex flex-col items-end">
-                            <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 text-right">你</div>
-                            <div class="bg-gradient-to-br from-violet-500 to-indigo-600 text-white px-6 py-4 rounded-2xl rounded-tr-sm shadow-lg shadow-violet-500/20 break-words max-w-full text-[15px] leading-relaxed transition-transform hover:scale-[1.02]">
+                            <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 text-right">用户</div>
+                            <div class="bg-gradient-to-br from-violet-500 to-indigo-600 text-white px-6 py-4 rounded-2xl rounded-tr-sm shadow-lg shadow-violet-500/20 break-words max-w-full text-[15px] leading-relaxed transition-transform hover:scale-[1.02] hover:shadow-xl hover:shadow-violet-500/30">
                                 ${message.replace(/\n/g, '<br>')}
                             </div>
                         </div>
                         <div class="flex-shrink-0">
-                            <div class="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 rounded-2xl flex items-center justify-center shadow-md">
+                            <div class="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 rounded-2xl flex items-center justify-center shadow-md transform hover:scale-110 transition-transform duration-200">
                                 <i class="fa-solid fa-user text-gray-600 dark:text-gray-300 text-sm"></i>
                             </div>
                         </div>
@@ -611,15 +653,15 @@
             if (sender === 'bot' && useTypeWriter) {
                 const contentDiv = messageDiv.querySelector('.message-content');
                 contentDiv.style.opacity = '1';
-                
+
                 const parsedHtml = parseMarkdown(message);
                 contentDiv.innerHTML = '';
-                
+
                 let i = 0;
                 let isTag = false;
                 let text = '';
                 isTyping = true;
-                
+
                 function typeWriter() {
                     if (!isTyping || i >= parsedHtml.length) {
                         isTyping = false;
@@ -630,21 +672,21 @@
                         scrollToBottom();
                         return;
                     }
-                    
+
                     if (i < parsedHtml.length) {
                         text += parsedHtml.charAt(i);
                         contentDiv.innerHTML = text;
-                        
+
                         if (parsedHtml.charAt(i) === '<') isTag = true;
                         if (parsedHtml.charAt(i) === '>') isTag = false;
-                        
+
                         i++;
-                        
+
                         const distanceToBottom = chatHistory.scrollHeight - chatHistory.scrollTop - chatHistory.clientHeight;
                         if (distanceToBottom < 50) {
                             scrollToBottom();
                         }
-                        
+
                         if (isTag) {
                             typeWriter();
                         } else {
@@ -652,7 +694,7 @@
                         }
                     }
                 }
-                
+
                 typeWriter();
             } else if (sender === 'bot') {
                 resetInputState();
@@ -664,19 +706,23 @@
             const loadingDiv = document.createElement('div');
             loadingDiv.id = loadingId;
             loadingDiv.className = 'flex w-full animate-fade-in-up';
-            
+
             const modelInfo = modelInfos[modelSelect.value];
-            
+
             loadingDiv.innerHTML = `
                 <div class="flex max-w-3xl w-full">
                     <div class="flex-shrink-0 mr-4">
-                        <div class="w-10 h-10 ${modelInfo.bg} rounded-2xl flex items-center justify-center shadow-lg text-white">
+                        <div class="w-10 h-10 ${modelInfo.bg} rounded-2xl flex items-center justify-center shadow-lg text-white animate-pulse-slow">
                             <i class="fa-solid ${modelInfo.icon} text-sm"></i>
                         </div>
                     </div>
                     <div class="flex-grow min-w-0 pt-2">
-                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                            ${modelInfo.title} <span class="text-xs font-normal text-gray-400">正在思考...</span>
+                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                            <span>${modelInfo.title}</span>
+                            <span class="text-xs font-normal text-gray-400 ml-2 flex items-center">
+                                正在思考
+                                <span class="animate-pulse ml-1">...</span>
+                            </span>
                         </div>
                         <div class="bg-white dark:bg-dark-card rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm border border-gray-100 dark:border-dark-border/50 inline-flex space-x-2 items-center">
                             <div class="w-2.5 h-2.5 bg-violet-400 rounded-full typing-dot"></div>
@@ -711,6 +757,7 @@
                         child.remove();
                     }
                 });
+                conversationHistory = []; // 清空对话历史
                 welcomeScreen.style.display = 'flex';
                 welcomeScreen.classList.remove('hidden');
             }
@@ -726,7 +773,7 @@
         });
 
         const html = document.documentElement;
-        
+
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             html.classList.add('dark');
             updateThemeIcon(true);
@@ -738,13 +785,13 @@
         themeToggleBtn.addEventListener('click', () => {
             html.classList.toggle('dark');
             const isDark = html.classList.contains('dark');
-            
+
             if (isDark) {
                 localStorage.theme = 'dark';
             } else {
                 localStorage.theme = 'light';
             }
-            
+
             updateThemeIcon(isDark);
         });
 
