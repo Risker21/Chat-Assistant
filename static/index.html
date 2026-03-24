@@ -763,12 +763,24 @@
             }
         });
 
+        // 初始化模型信息
+        function initModelInfo() {
+            const info = modelInfos[modelSelect.value];
+            modelTitle.textContent = info.title;
+            modelDescription.textContent = info.desc;
+            modelIcon.className = `fa-solid ${info.icon}`;
+            modelIconBg.className = `${info.bg} rounded-xl flex items-center justify-center shadow-md animate-float`;
+        }
+
+        // 页面加载时初始化
+        window.addEventListener('DOMContentLoaded', initModelInfo);
+
         modelSelect.addEventListener('change', () => {
             const info = modelInfos[modelSelect.value];
             modelTitle.textContent = info.title;
             modelDescription.textContent = info.desc;
             modelIcon.className = `fa-solid ${info.icon}`;
-            modelIconBg.className = `${info.bg} rounded-xl flex items-center justify-center shadow-md`;
+            modelIconBg.className = `${info.bg} rounded-xl flex items-center justify-center shadow-md animate-float`;
             showToast(`已切换至 ${info.title}`);
         });
 
