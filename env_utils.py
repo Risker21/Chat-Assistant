@@ -14,3 +14,7 @@ ZHIPU_BASE_URL = os.getenv("ZHIPU_BASE_URL")
 
 HUNYUAN_API_KEY = os.getenv("HUNYUAN_API_KEY")
 HUNYUAN_BASE_URL = os.getenv("HUNYUAN_BASE_URL")
+
+DOUBAO_API_KEY = os.getenv("DOUBAO_API_KEY")
+ARK_API_KEY = os.getenv("ARK_API_KEY")
+DOUBAO_BASE_URL = os.getenv("DOUBAO_BASE_URL", "https://ark.cn-beijing.volces.com/api/v3")

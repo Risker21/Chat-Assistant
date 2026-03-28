@@ -239,6 +239,7 @@
                             <option value="hunyuan" class="text-gray-900">Ethan</option>
                             <option value="qwen" class="text-gray-900">Luna</option>
                             <option value="glm" class="text-gray-900">Felix</option>
+                            <option value="doubao" class="text-gray-900">小Y</option>
                         </select>
                     <i class="fa-solid fa-chevron-down absolute right-3 text-xs text-gray-400 pointer-events-none transition-transform duration-300 group-hover:rotate-180"></i>
                 </div>
@@ -355,7 +356,17 @@
                            class="w-full bg-transparent px-6 py-4 max-h-40 min-h-[60px] resize-none focus:outline-none text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 scrollbar-hide text-base leading-relaxed"
                            style="overflow-y: hidden;"></textarea>
 
+                    <div id="image-preview-container" class="hidden px-4 pb-2">
+                        <div class="flex flex-wrap gap-2" id="image-preview-list"></div>
+                    </div>
+
                     <div class="flex justify-between items-center px-4 pb-4 pt-1">
+                        <div class="flex items-center space-x-2">
+                            <input type="file" id="image-input" accept="image/*" multiple class="hidden">
+                            <button type="button" id="image-btn" class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:text-violet-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200" title="上传图片">
+                                <i class="fa-solid fa-image text-lg"></i>
+                            </button>
+                        </div>
                         <div class="text-xs text-gray-400 dark:text-gray-500 pl-2 hidden sm:flex items-center space-x-1">
                             <span class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg text-[10px] border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Enter</span>
                             <span>发送</span>
@@ -435,6 +446,12 @@
                 desc: '数学大师：精通各种数学问题，包括代数、几何、微积分等各个领域。',
                 bg: 'bg-gradient-to-br from-blue-500 to-indigo-600',
                 icon: 'fa-square-root-variable'
+            },
+            'doubao': {
+                title: '绘画大师',
+                desc: '小Y：绘画大师，擅长各种绘画风格和图片编辑，能够根据用户的需求创作出精美的图片。',
+                bg: 'bg-gradient-to-br from-purple-500 to-violet-600',
+                icon: 'fa-paint-brush'
             }
         };
 
@@ -499,6 +516,180 @@
 
         sendBtn.disabled = true;
 
+        const imageInput = document.getElementById('image-input');
+        const imageBtn = document.getElementById('image-btn');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imagePreviewList = document.getElementById('image-preview-list');
+
+        let uploadedImages = [];
+
+        imageBtn.addEventListener('click', () => {
+            imageInput.click();
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        uploadedImages.push(event.target.result);
+                        renderImagePreviews();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            e.target.value = '';
+        });
+
+        function renderImagePreviews() {
+            if (uploadedImages.length === 0) {
+                imagePreviewContainer.classList.add('hidden');
+                return;
+            }
+            imagePreviewContainer.classList.remove('hidden');
+            imagePreviewList.innerHTML = uploadedImages.map((img, index) => `
+                <div class="relative group">
+                    <img src="${img}" class="w-20 h-20 object-cover rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <button type="button" onclick="removeImage(${index})" class="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        window.removeImage = function(index) {
+            uploadedImages.splice(index, 1);
+            renderImagePreviews();
+        };
+
+        function downloadImage(imageUrl) {
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `generated-image-${Date.now()}.jpg`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showToast('图片已下载');
+                })
+                .catch(error => {
+                    console.error('下载图片失败:', error);
+                    showToast('下载图片失败', 'error');
+                });
+        }
+
+        document.addEventListener('paste', (e) => {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let item of items) {
+                if (item.kind === 'file' && item.type.startsWith('image/')) {
+                    const file = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        uploadedImages.push(event.target.result);
+                        renderImagePreviews();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        function addGeneratedImageToHistory(imageUrl, prompt) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex w-full animate-fade-in-up group';
+
+            const modelInfo = modelInfos[modelSelect.value];
+
+            messageDiv.innerHTML = `
+                <div class="flex max-w-3xl w-full">
+                    <div class="flex-shrink-0 mr-4">
+                        <div class="w-10 h-10 ${modelInfo.bg} rounded-2xl flex items-center justify-center shadow-lg text-white transform hover:scale-110 transition-transform duration-200 animate-float">
+                            <i class="fa-solid ${modelInfo.icon} text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow min-w-0 pt-1 relative">
+                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+                            <span class="flex items-center space-x-2">
+                                <span>${modelInfo.title}</span>
+                                <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+                            </span>
+                        </div>
+                        <div class="bg-white dark:bg-dark-card rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm border border-gray-100 dark:border-dark-border/50">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-3 italic">"${prompt}"</p>
+                            <div class="relative">
+                                <img src="${imageUrl}" class="max-w-full rounded-xl shadow-lg hover:shadow-xl transition-shadow cursor-pointer" onclick="window.open('${imageUrl}', '_blank')">
+                                <button onclick="downloadImage('${imageUrl}')" class="absolute bottom-2 right-2 w-10 h-10 bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm rounded-full flex items-center justify-center text-violet-500 hover:text-violet-600 shadow-md transition-all duration-300 opacity-0 group-hover:opacity-100">
+                                    <i class="fa-solid fa-download text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            chatHistory.appendChild(messageDiv);
+            scrollToBottom();
+            resetInputState();
+        }
+
+        function addMessageToHistoryWithImages(sender, message, images) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex w-full animate-fade-in-up group';
+
+            if (sender === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="flex max-w-3xl w-full justify-end ml-auto">
+                        <div class="flex-grow min-w-0 pt-1 mr-4 flex flex-col items-end">
+                            <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 text-right">用户</div>
+                            ${images && images.length > 0 ? `<div class="flex flex-wrap gap-2 mb-2 justify-end">${images.map(img => `<img src="${img}" class="max-w-48 max-h-48 object-cover rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">`).join('')}</div>` : ''}
+                            <div class="bg-gradient-to-br from-violet-500 to-indigo-600 text-white px-6 py-4 rounded-2xl rounded-tr-sm shadow-lg shadow-violet-500/20 break-words max-w-full text-[15px] leading-relaxed transition-transform hover:scale-[1.02] hover:shadow-xl hover:shadow-violet-500/30">
+                                ${message.replace(/\n/g, '<br>')}
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <div class="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 rounded-2xl flex items-center justify-center shadow-md transform hover:scale-110 transition-transform duration-200">
+                                <i class="fa-solid fa-user text-gray-600 dark:text-gray-300 text-sm"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                const modelInfo = modelInfos[modelSelect.value];
+                const escapedMessage = message.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                messageDiv.innerHTML = `
+                    <div class="flex max-w-3xl w-full">
+                        <div class="flex-shrink-0 mr-4">
+                            <div class="w-10 h-10 ${modelInfo.bg} rounded-2xl flex items-center justify-center shadow-lg text-white transform hover:scale-110 transition-transform duration-200 animate-float">
+                                <i class="fa-solid ${modelInfo.icon} text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow min-w-0 pt-1 relative">
+                            <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center justify-between">
+                                <span class="flex items-center space-x-2">
+                                    <span>${modelInfo.title}</span>
+                                    <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+                                </span>
+                                <button data-clipboard-text="${escapedMessage}" onclick="copyToClipboard(this.getAttribute('data-clipboard-text'), this)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-all p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transform hover:scale-110" title="复制回答">
+                                    <i class="fa-regular fa-copy text-sm"></i>
+                                </button>
+                            </div>
+                            <div class="bg-white dark:bg-dark-card rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm border border-gray-100 dark:border-dark-border/50 message-content markdown-body text-gray-800 dark:text-gray-200 hover:shadow-md transition-all duration-300" ${useTypeWriter ? 'style="opacity: 0"' : ''}>
+                                ${useTypeWriter ? '' : parseMarkdown(message)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            chatHistory.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
         suggestionBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const text = btn.querySelector('p').textContent;
@@ -515,11 +706,14 @@
         chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const message = messageInput.value.trim();
-            if (!message) return;
+            if (!message && uploadedImages.length === 0) return;
 
             if (welcomeScreen && welcomeScreen.style.display !== 'none') {
                 welcomeScreen.style.display = 'none';
             }
+
+            const hasImages = uploadedImages.length > 0;
+            const messageToSend = message || (hasImages ? '[用户发送了图片]' : '');
 
             messageInput.value = '';
             messageInput.style.height = 'auto';
@@ -527,40 +721,74 @@
             stopBtn.classList.remove('hidden');
             messageInput.disabled = true;
 
-            // 添加用户消息到历史记录
-            conversationHistory.push({ role: 'user', content: message });
-            addMessageToHistory('user', message);
+            conversationHistory.push({ role: 'user', content: messageToSend });
+            addMessageToHistoryWithImages('user', messageToSend, uploadedImages);
 
             const loadingId = addLoadingMessage();
-            
+
             currentAbortController = new AbortController();
 
             try {
                 const selectedModel = modelSelect.value;
-                
+
+                let requestBody = {
+                    message: messageToSend,
+                    model: selectedModel,
+                    history: conversationHistory
+                };
+
+                if (hasImages) {
+                    requestBody.images = uploadedImages;
+                }
+
                 const response = await fetch('/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        message, 
-                        model: selectedModel,
-                        history: conversationHistory
-                    }),
-                    signal: currentAbortController.signal
-                });
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody),
+                signal: currentAbortController.signal
+            });
 
-                if (!response.ok) throw new Error('网络请求失败');
+            if (!response.ok) throw new Error('网络请求失败');
 
-                const data = await response.json();
+            const data = await response.json();
+
+            // 移除加载消息
+            removeLoadingMessage(loadingId);
+
+            // 显示思考过程
+            if (data.thinking) {
+                const thinkingId = addThinkingMessage(data.thinking);
                 
-                // 添加AI回复到历史记录
+                // 短暂延迟后隐藏思考过程并显示最终结果
+                setTimeout(() => {
+                    removeThinkingMessage(thinkingId);
+                    
+                    conversationHistory.push({ role: 'assistant', content: data.response });
+                    
+                    if (data.type === 'image') {
+                        addGeneratedImageToHistory(data.response, data.prompt || messageToSend);
+                    } else {
+                        addMessageToHistory('bot', data.response, true);
+                    }
+                }, 1000);
+            } else {
                 conversationHistory.push({ role: 'assistant', content: data.response });
-                removeLoadingMessage(loadingId);
-                addMessageToHistory('bot', data.response, true);
+                
+                if (data.type === 'image') {
+                    addGeneratedImageToHistory(data.response, data.prompt || messageToSend);
+                } else {
+                    addMessageToHistory('bot', data.response, true);
+                }
+            }
+
+                uploadedImages = [];
+                renderImagePreviews();
 
             } catch (error) {
                 console.error('错误:', error);
                 removeLoadingMessage(loadingId);
+                uploadedImages = [];
+                renderImagePreviews();
 
                 if (error.name === 'AbortError') {
                     showToast('已停止生成', 'success');
@@ -701,13 +929,14 @@
             }
         }
 
-        function addLoadingMessage() {
+        function addLoadingMessage(customMessage) {
             const loadingId = `loading-${Date.now()}`;
             const loadingDiv = document.createElement('div');
             loadingDiv.id = loadingId;
             loadingDiv.className = 'flex w-full animate-fade-in-up';
 
             const modelInfo = modelInfos[modelSelect.value];
+            const statusText = customMessage || '正在思考';
 
             loadingDiv.innerHTML = `
                 <div class="flex max-w-3xl w-full">
@@ -720,7 +949,7 @@
                         <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
                             <span>${modelInfo.title}</span>
                             <span class="text-xs font-normal text-gray-400 ml-2 flex items-center">
-                                正在思考
+                                ${statusText}
                                 <span class="animate-pulse ml-1">...</span>
                             </span>
                         </div>
@@ -741,6 +970,51 @@
         function removeLoadingMessage(loadingId) {
             const loadingDiv = document.getElementById(loadingId);
             if (loadingDiv) loadingDiv.remove();
+        }
+
+        function addThinkingMessage(thinkingText) {
+            const thinkingId = `thinking-${Date.now()}`;
+            const thinkingDiv = document.createElement('div');
+            thinkingDiv.id = thinkingId;
+            thinkingDiv.className = 'flex w-full animate-fade-in-up';
+
+            const modelInfo = modelInfos[modelSelect.value];
+
+            thinkingDiv.innerHTML = `
+                <div class="flex max-w-3xl w-full">
+                    <div class="flex-shrink-0 mr-4">
+                        <div class="w-10 h-10 ${modelInfo.bg} rounded-2xl flex items-center justify-center shadow-lg text-white animate-pulse-slow">
+                            <i class="fa-solid ${modelInfo.icon} text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow min-w-0 pt-2">
+                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                            <span>${modelInfo.title}</span>
+                        </div>
+                        <div class="bg-white dark:bg-dark-card rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm border border-gray-100 dark:border-dark-border/50">
+                            <p class="text-gray-500 dark:text-gray-400 italic flex items-center">
+                                <i class="fa-solid fa-brain mr-2 text-violet-500 animate-pulse"></i>
+                                ${thinkingText}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            chatHistory.appendChild(thinkingDiv);
+            scrollToBottom();
+            return thinkingId;
+        }
+
+        function removeThinkingMessage(thinkingId) {
+            const thinkingDiv = document.getElementById(thinkingId);
+            if (thinkingDiv) {
+                // 添加淡出动画
+                thinkingDiv.classList.add('opacity-0', 'translate-y-2', 'transition-all', 'duration-300');
+                setTimeout(() => {
+                    thinkingDiv.remove();
+                }, 300);
+            }
         }
 
         function scrollToBottom() {

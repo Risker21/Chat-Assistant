@@ -1,7 +1,8 @@
 from langchain.chat_models import init_chat_model
+from langchain_openai import ChatOpenAI
 
 from env_utils import DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DASHSCOPE_API_KEY, DASHSCOPE_BASE_URL, ZHIPU_API_KEY, \
-    ZHIPU_BASE_URL, HUNYUAN_API_KEY, HUNYUAN_BASE_URL
+    ZHIPU_BASE_URL, HUNYUAN_API_KEY, HUNYUAN_BASE_URL, DOUBAO_API_KEY, DOUBAO_BASE_URL
 
 # 初始化Deepseek模型
 deepseek_llm = init_chat_model(
@@ -19,6 +20,14 @@ dashscope_llm = init_chat_model(
     base_url=DASHSCOPE_BASE_URL,
 )
 
+# 初始化支持图片理解的千问模型
+dashscope_vision_llm = ChatOpenAI(
+    model="qwen-vl-max",
+    api_key=DASHSCOPE_API_KEY,
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    max_retries=3,
+)
+
 # 初始化智谱模型
 zhipu_llm = init_chat_model(
     model="glm-5",
@@ -33,4 +42,12 @@ hunyuan_llm = init_chat_model(
     model_provider="openai",
     api_key=HUNYUAN_API_KEY,
     base_url=HUNYUAN_BASE_URL,
+)
+
+# 初始化豆包模型
+doubao_llm = init_chat_model(
+    model="Doubao-Seed-1.8",
+    model_provider="openai",
+    api_key=DOUBAO_API_KEY,
+    base_url=DOUBAO_BASE_URL,
 )
