@@ -180,9 +180,13 @@ async def chat(request: Request):
                     content.append({"type": "image_url", "image_url": {"url": img_b64}})
 
                 msg = HumanMessage(content=content)
-                vision_response = dashscope_vision_llm.invoke([msg])
-                image_description = vision_response.content if hasattr(vision_response, 'content') else str(
-                    vision_response)
+                if dashscope_vision_llm:
+                    vision_response = dashscope_vision_llm.invoke([msg])
+                    image_description = vision_response.content if hasattr(vision_response, 'content') else str(
+                        vision_response)
+                else:
+                    image_description = "图片分析失败，视觉模型未初始化"
+                    print("视觉模型未初始化，使用默认描述")
 
                 print(f"图片分析结果: {image_description}")
 
@@ -438,8 +442,12 @@ async def chat(request: Request):
 
             full_message = role_prompt + f"\n\n用户: {message}"
             msg = HumanMessage(content=content)
-            response = dashscope_vision_llm.invoke([msg])
-            reply = response.content if hasattr(response, 'content') else str(response)
+            if dashscope_vision_llm:
+                response = dashscope_vision_llm.invoke([msg])
+                reply = response.content if hasattr(response, 'content') else str(response)
+            else:
+                reply = "视觉模型未初始化，无法分析图片"
+                print("视觉模型未初始化，无法分析图片")
         elif model == "doubao":
             # 豆包模型直接使用OpenAI客户端
             from openai import OpenAI
