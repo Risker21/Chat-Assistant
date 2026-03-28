@@ -159,7 +159,7 @@ async def chat(request: Request):
 
         # 处理图片编辑请求
         if is_image_edit and images:
-            from env_utils import DASHSCOPE_API_KEY, DOUBAO_API_KEY
+            from env_utils import DASHSCOPE_API_KEY, DOUBAO_API_KEY, DOUBAO_BASE_URL
             import asyncio
             import dashscope
             from dashscope import ImageSynthesis
@@ -180,13 +180,9 @@ async def chat(request: Request):
                     content.append({"type": "image_url", "image_url": {"url": img_b64}})
 
                 msg = HumanMessage(content=content)
-                if dashscope_vision_llm:
-                    vision_response = dashscope_vision_llm.invoke([msg])
-                    image_description = vision_response.content if hasattr(vision_response, 'content') else str(
-                        vision_response)
-                else:
-                    image_description = "图片分析失败，视觉模型未初始化"
-                    print("视觉模型未初始化，使用默认描述")
+                vision_response = dashscope_vision_llm.invoke([msg])
+                image_description = vision_response.content if hasattr(vision_response, 'content') else str(
+                    vision_response)
 
                 print(f"图片分析结果: {image_description}")
 
@@ -283,7 +279,7 @@ async def chat(request: Request):
                     print(f"API Key: {api_key[:10]}...")
                     
                     client = OpenAI(
-                        base_url="https://ark.cn-beijing.volces.com/api/v3",
+                        base_url=DOUBAO_BASE_URL,
                         api_key=api_key,
                     )
                     
@@ -349,7 +345,7 @@ async def chat(request: Request):
                 return {"response": f"生成图片失败：{str(e)}", "type": "text"}
 
         elif is_image_request and not images:
-            from env_utils import DASHSCOPE_API_KEY, DOUBAO_API_KEY
+            from env_utils import DASHSCOPE_API_KEY, DOUBAO_API_KEY, DOUBAO_BASE_URL
             import asyncio
             import dashscope
             from dashscope import ImageSynthesis
@@ -367,7 +363,7 @@ async def chat(request: Request):
                     print(f"API Key: {api_key[:10]}...")
                     
                     client = OpenAI(
-                        base_url="https://ark.cn-beijing.volces.com/api/v3",
+                        base_url=DOUBAO_BASE_URL,
                         api_key=api_key,
                     )
                     
@@ -442,12 +438,8 @@ async def chat(request: Request):
 
             full_message = role_prompt + f"\n\n用户: {message}"
             msg = HumanMessage(content=content)
-            if dashscope_vision_llm:
-                response = dashscope_vision_llm.invoke([msg])
-                reply = response.content if hasattr(response, 'content') else str(response)
-            else:
-                reply = "视觉模型未初始化，无法分析图片"
-                print("视觉模型未初始化，无法分析图片")
+            response = dashscope_vision_llm.invoke([msg])
+            reply = response.content if hasattr(response, 'content') else str(response)
         elif model == "doubao":
             # 豆包模型直接使用OpenAI客户端
             from openai import OpenAI
