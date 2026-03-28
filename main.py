@@ -4,7 +4,19 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from langchain_core.messages import HumanMessage
 
-from my_llm import deepseek_llm, dashscope_llm, zhipu_llm, hunyuan_llm, dashscope_vision_llm, doubao_llm
+# 导入模型，添加错误处理
+try:
+    from my_llm import deepseek_llm, dashscope_llm, zhipu_llm, hunyuan_llm, dashscope_vision_llm, doubao_llm
+except Exception as e:
+    print(f"导入模型失败: {e}")
+    # 确保所有模型变量都有默认值
+    deepseek_llm = None
+    dashscope_llm = None
+    zhipu_llm = None
+    hunyuan_llm = None
+    dashscope_vision_llm = None
+    doubao_llm = None
+
 import time
 import hashlib
 import os
