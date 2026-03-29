@@ -104,12 +104,8 @@ async def chat(request: Request):
             "滤镜效果": ["滤镜", "效果", "风格化", "复古", "黑白", "sepia", "滤镜效果"]
         }
 
-        # 检测图片生成请求
-        for keyword in image_keywords:
-            if keyword in message:
-                is_image_request = True
-                image_prompt = message
-                break
+        # 首先检查是否有图片上传
+        has_images = len(images) > 0
         
         # 提取图片尺寸信息
         import re
@@ -143,8 +139,8 @@ async def chat(request: Request):
         
         print(f"识别到的图片尺寸: {image_size}")
 
-        # 检测图片编辑请求
-        if not is_image_request and images:
+        # 检测图片编辑请求（优先检查）
+        if has_images:
             for edit_type_key, keywords in edit_keywords.items():
                 for keyword in keywords:
                     if keyword in message:
@@ -153,6 +149,14 @@ async def chat(request: Request):
                         image_prompt = message
                         break
                 if is_image_edit:
+                    break
+        
+        # 检测图片生成请求（仅当不是图片编辑请求时）
+        if not is_image_edit:
+            for keyword in image_keywords:
+                if keyword in message:
+                    is_image_request = True
+                    image_prompt = message
                     break
 
         print(f"需求识别结果 - 图片生成: {is_image_request}, 图片编辑: {is_image_edit}, 编辑类型: {edit_type}")
