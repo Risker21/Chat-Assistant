@@ -5,10 +5,12 @@ from fastapi.staticfiles import StaticFiles
 from langchain_core.messages import HumanMessage
 
 from my_llm import deepseek_llm, dashscope_llm, zhipu_llm, hunyuan_llm, dashscope_vision_llm, doubao_llm
+from env_utils import TAVILY_API_KEY, TAVILY_BASE_URL
 import time
 import hashlib
 import os
 import requests
+from tavily import TavilyClient
 
 app = FastAPI()
 
@@ -104,6 +106,14 @@ async def chat(request: Request):
             "滤镜效果": ["滤镜", "效果", "风格化", "复古", "黑白", "sepia", "滤镜效果"]
         }
 
+        # Web搜索关键词
+        web_search_keywords = [
+            "搜索", "查找", "最新", "现在", "查询", "了解", "查一下",
+            "怎么", "如何", "是什么", "请问", "告诉", "介绍一下",
+            "search", "find", "latest", "现在", "当前", "今天", "天气", "温度", "气温",
+            "几号", "日期", "星期", "时间", "多少号", "什么时间"
+        ]
+
         # 首先检查是否有图片上传
         has_images = len(images) > 0
         
@@ -160,6 +170,118 @@ async def chat(request: Request):
                     break
 
         print(f"需求识别结果 - 图片生成: {is_image_request}, 图片编辑: {is_image_edit}, 编辑类型: {edit_type}")
+
+        # 检测Web搜索请求
+        is_web_search = False
+        # 优先检测明确的搜索关键词
+        explicit_search_keywords = ["搜索", "查找", "查询", "查一下", "search", "find"]
+        for keyword in explicit_search_keywords:
+            if keyword in message:
+                is_web_search = True
+                print(f"检测到明确搜索关键词: {keyword}")
+                break
+        
+        # 如果没有明确搜索关键词，检测需要实时信息的问题
+        if not is_web_search:
+            realtime_keywords = ["最新", "现在", "今天", "天气", "温度", "气温", 
+                               "如何", "怎么", "是什么", "几号", "日期", "星期", 
+                               "时间", "多少号", "什么时间"]
+            for keyword in realtime_keywords:
+                if keyword in message:
+                    is_web_search = True
+                    print(f"检测到实时信息关键词: {keyword}")
+                    break
+        
+        print(f"Web搜索检测结果: {is_web_search}")
+
+        # 处理Web搜索请求
+        if is_web_search:
+            try:
+                if not TAVILY_API_KEY:
+                    return {"response": "Web搜索功能未配置，请联系管理员。", "type": "text"}
+
+                # 初始化 Tavily 客户端
+                tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
+                
+                # 根据问题类型智能选择搜索参数
+                search_params = {"query": message}
+                
+                # 检测问题类型
+                is_news_request = any(keyword in message for keyword in ["新闻", "最新", "事件", "发生了什么", "消息"])
+                is_time_request = any(keyword in message for keyword in ["今天", "昨天", "明天", "本周", "这周", "本月", "这月", "今年", "现在", "几号", "日期"])
+                is_weather_request = any(keyword in message for keyword in ["天气", "温度", "气温", "下雨", "晴天", "阴天", "雪"])
+                
+                # 设置搜索主题
+                if is_news_request:
+                    search_params["topic"] = "news"
+                else:
+                    search_params["topic"] = "general"
+                
+                # 设置时间范围
+                if is_time_request or is_weather_request:
+                    search_params["time_range"] = "day"
+                elif is_news_request:
+                    search_params["time_range"] = "week"
+                else:
+                    search_params["time_range"] = "month"
+                
+                # 设置搜索深度
+                search_params["search_depth"] = "advanced"
+                search_params["max_results"] = 5
+                
+                # 调用 Tavily 搜索
+                response = tavily_client.search(**search_params)
+                search_result = response.get('results', [])
+                
+                if search_result:
+                    search_context = "\n\n以下是搜索结果：\n\n"
+                    
+                    # 遍历处理搜索结果
+                    for i, result in enumerate(search_result, 1):
+                        title = result.get('title', '无标题')
+                        content = result.get('content', '无内容')
+                        url = result.get('url', '')
+                        published_date = result.get('published_date', '')
+                        
+                        # 构建结果条目
+                        result_entry = f"{i}. {title}\n"
+                        if published_date:
+                            result_entry += f"发布时间: {published_date}\n"
+                        result_entry += f"{content}\n"
+                        if url:
+                            result_entry += f"来源: {url}\n"
+                        result_entry += "\n"
+                        
+                        search_context += result_entry
+                    
+                    role_prompt += f"\n\n你是一个专业的助手，当用户询问需要实时信息或最新消息时，你应该基于提供的搜索结果来回答。搜索结果可能包含最新的信息，请优先使用这些信息来回答用户的问题。如果搜索结果与你的知识有冲突，请以搜索结果为准。"
+                    full_message = role_prompt + f"\n\n用户的问题：{message}\n\n{search_context}\n\n请根据以上搜索结果回答用户的问题。"
+                    
+                    if model not in model_map:
+                        return {"response": f"不支持的模型: {model}", "type": "text"}
+                    
+                    llm = model_map[model]
+                    response = llm.invoke(full_message)
+                    
+                    if hasattr(response, 'content'):
+                        reply = response.content
+                    elif isinstance(response, str):
+                        reply = response
+                    else:
+                        reply = str(response)
+                    
+                    return {
+                        "response": reply,
+                        "type": "text",
+                        "thinking": "我正在搜索相关信息...",
+                        "search_results": search_result
+                    }
+                else:
+                    return {"response": "未找到相关搜索结果", "type": "text"}
+                    
+            except Exception as e:
+                print(f"Web搜索错误: {e}")
+                return {"response": f"搜索功能出错: {str(e)}", "type": "text"}
 
         # 处理图片编辑请求
         if is_image_edit and images:

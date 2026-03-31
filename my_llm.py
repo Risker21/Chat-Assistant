@@ -1,8 +1,9 @@
 from langchain.chat_models import init_chat_model
 from langchain_openai import ChatOpenAI
+from langchain_tavily import TavilySearch
 
 from env_utils import DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DASHSCOPE_API_KEY, DASHSCOPE_BASE_URL, ZHIPU_API_KEY, \
-    ZHIPU_BASE_URL, HUNYUAN_API_KEY, HUNYUAN_BASE_URL, DOUBAO_API_KEY, DOUBAO_BASE_URL
+    ZHIPU_BASE_URL, HUNYUAN_API_KEY, HUNYUAN_BASE_URL, DOUBAO_API_KEY, DOUBAO_BASE_URL, TAVILY_API_KEY, TAVILY_BASE_URL
 
 # 初始化Deepseek模型
 deepseek_llm = init_chat_model(
@@ -51,3 +52,6 @@ doubao_llm = init_chat_model(
     api_key=DOUBAO_API_KEY,
     base_url=DOUBAO_BASE_URL,
 )
+
+# 初始化 Tavily 搜索工具
+tavily_search = TavilySearch(api_key=TAVILY_API_KEY, base_url=TAVILY_BASE_URL, max_results=5)
