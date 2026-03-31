@@ -263,10 +263,15 @@ async def chat(request: Request):
                     role_prompt += f"\n\n你是一个专业的助手，当用户询问需要实时信息或最新消息时，你应该基于提供的搜索结果来回答。搜索结果可能包含最新的信息，请优先使用这些信息来回答用户的问题。如果搜索结果与你的知识有冲突，请以搜索结果为准。"
                     full_message = role_prompt + f"\n\n用户的问题：{message}\n\n{search_context}\n\n请根据以上搜索结果回答用户的问题。"
                     
-                    if model not in model_map:
+                    # 对于豆包模型，使用 DeepSeek 模型来处理搜索结果
+                    if model == "doubao":
+                        print("豆包模型不支持搜索，使用 DeepSeek 模型处理搜索结果")
+                        llm = deepseek_llm
+                    elif model not in model_map:
                         return {"response": f"不支持的模型: {model}", "type": "text"}
+                    else:
+                        llm = model_map[model]
                     
-                    llm = model_map[model]
                     response = llm.invoke(full_message)
                     
                     if hasattr(response, 'content'):
