@@ -204,7 +204,7 @@ async def chat(request: Request):
                 tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
                 
                 # 根据问题类型智能选择搜索参数
-                search_params = {"query": message}
+                search_params = {"query": message, "max_results": 5}
                 
                 # 检测问题类型
                 is_news_request = any(keyword in message for keyword in ["新闻", "最新", "事件", "发生了什么", "消息"])
@@ -227,11 +227,17 @@ async def chat(request: Request):
                 
                 # 设置搜索深度
                 search_params["search_depth"] = "advanced"
-                search_params["max_results"] = 5
                 
                 # 调用 Tavily 搜索
-                response = tavily_client.search(**search_params)
-                search_result = response.get('results', [])
+                try:
+                    response = tavily_client.search(**search_params)
+                    search_result = response.get('results', [])
+                except TypeError as e:
+                    # 如果参数不兼容，使用基本参数重试
+                    print(f"参数错误: {e}, 使用基本参数重试")
+                    basic_params = {"query": message, "max_results": 5}
+                    response = tavily_client.search(**basic_params)
+                    search_result = response.get('results', [])
                 
                 if search_result:
                     search_context = "\n\n以下是搜索结果：\n\n"
