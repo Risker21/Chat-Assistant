@@ -1,11 +1,35 @@
-# Test your FastAPI endpoints
-
-GET http://127.0.0.1:8000/
+### Health Check
+GET http://127.0.0.1:8000/api/health
 Accept: application/json
 
-###
-
-GET http://127.0.0.1:8000/hello/User
+### List Models
+GET http://127.0.0.1:8000/api/v1/models
 Accept: application/json
 
-###
+### List Personas (Guest)
+GET http://127.0.0.1:8000/api/v1/personas
+X-Guest-ID: demo_guest_12345
+Accept: application/json
+
+### Create Conversation
+POST http://127.0.0.1:8000/api/v1/conversations
+Content-Type: application/json
+X-Guest-ID: demo_guest_12345
+
+{
+  "title": "测试对话",
+  "model": "deepseek",
+  "persona_id": "deepseek"
+}
+
+### Stream Chat (SSE)
+POST http://127.0.0.1:8000/api/v1/chat/stream
+Content-Type: application/json
+X-Guest-ID: demo_guest_12345
+
+{
+  "message": "你好，介绍一下你自己",
+  "model": "deepseek",
+  "persona_id": "deepseek",
+  "web_search": "auto"
+}

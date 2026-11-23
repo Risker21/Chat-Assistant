@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/jpg" href="../img/favicon.jpg">
-    <title>解忧小铺</title>
+    <link rel="icon" type="image/jpeg" href="/img/favicon.jpg">
+    <title>解忧小铺 · AI 智能助手</title>
 
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.5/purify.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- Markdown + Sanitizer + Syntax Highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX for Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -19,1085 +25,434 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
-                        },
                         dark: {
-                            bg: '#0f0f1a',
-                            card: '#1a1a2e',
-                            border: '#2d2d44',
-                            text: '#e4e4e7'
+                            bg: '#0b0d17',
+                            surface: '#121526',
+                            card: '#191d32',
+                            border: '#272c46',
+                            text: '#e5e7eb',
                         },
-                        gradient: {
-                            'chat': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            'hero': 'linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%)',
-                            'hero-dark': 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-                        }
                     },
                     fontFamily: {
-                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'sans-serif'],
                     },
-                    boxShadow: {
-                        'glow': '0 0 20px rgba(99, 102, 241, 0.3)',
-                        'glow-lg': '0 0 40px rgba(99, 102, 241, 0.2)',
-                        'float': '0 10px 40px -10px rgba(0, 0, 0, 0.15)',
-                    },
-                    animation: {
-                        'float': 'float 3s ease-in-out infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'gradient': 'gradient 8s ease infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        },
-                        gradient: {
-                            '0%, 100%': { backgroundPosition: '0% 50%' },
-                            '50%': { backgroundPosition: '100% 50%' },
-                        }
-                    }
                 },
-            }
-        }
+            },
+        };
     </script>
-
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .scrollbar-hide {
-                -ms-overflow-style: none;
-                scrollbar-width: none;
-            }
-            .scrollbar-hide::-webkit-scrollbar {
-                display: none;
-            }
-            .scrollbar-custom::-webkit-scrollbar {
-                width: 6px;
-            }
-            .scrollbar-custom::-webkit-scrollbar-track {
-                background: transparent;
-            }
-            .scrollbar-custom::-webkit-scrollbar-thumb {
-                background: #d1d5db;
-                border-radius: 3px;
-            }
-            .dark .scrollbar-custom::-webkit-scrollbar-thumb {
-                background: #4b5563;
-            }
-            .markdown-body pre {
-                @apply bg-gray-800 text-gray-100 rounded-xl p-4 my-4 overflow-x-auto;
-            }
-            .markdown-body code:not(pre code) {
-                @apply bg-gray-100 dark:bg-gray-700 text-violet-500 dark:text-violet-400 px-1.5 py-0.5 rounded text-sm font-mono;
-            }
-            .markdown-body p {
-                @apply mb-3 last:mb-0 leading-relaxed;
-            }
-            .markdown-body ul {
-                @apply list-disc list-inside mb-3 space-y-1;
-            }
-            .markdown-body ol {
-                @apply list-decimal list-inside mb-3 space-y-1;
-            }
-            .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
-                @apply font-bold mt-6 mb-3;
-            }
-            .markdown-body h1 { @apply text-2xl border-b pb-2 dark:border-gray-700; }
-            .markdown-body h2 { @apply text-xl border-b pb-2 dark:border-gray-700; }
-            .markdown-body h3 { @apply text-lg; }
-            .markdown-body a {
-                @apply text-blue-500 hover:underline;
-            }
-            .markdown-body blockquote {
-                @apply border-l-4 border-violet-400 dark:border-violet-600 pl-4 py-1 text-gray-600 dark:text-gray-400 italic my-4 bg-gray-50 dark:bg-gray-800/50 rounded-r-lg;
-            }
-            .markdown-body table {
-                @apply w-full border-collapse mb-4;
-            }
-            .markdown-body th, .markdown-body td {
-                @apply border border-gray-200 dark:border-gray-700 px-4 py-2 text-left;
-            }
-            .markdown-body th {
-                @apply bg-gray-100 dark:bg-gray-700 font-semibold;
-            }
-
-            .typing-dot {
-                animation: typing 1.4s infinite ease-in-out both;
-            }
-            .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-            .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-            @keyframes typing {
-                0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
-                40% { transform: scale(1); opacity: 1; }
-            }
-
-            @keyframes fade-in-up {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-            .animate-fade-in-up {
-                animation: fade-in-up 0.4s ease-out forwards;
-            }
-
-            @keyframes shimmer {
-                0% { background-position: -200% 0; }
-                100% { background-position: 200% 0; }
-            }
-            .shimmer {
-                background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
-                background-size: 200% 100%;
-                animation: shimmer 2s infinite;
-            }
-
-            .glass {
-                background: rgba(255, 255, 255, 0.8);
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
-            }
-            .dark .glass {
-                background: rgba(26, 26, 46, 0.8);
-            }
-            
-            @keyframes float {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-10px); }
-            }
-            .animate-float {
-                animation: float 3s ease-in-out infinite;
-            }
-            
-            @keyframes gradient {
-                0%, 100% { background-position: 0% 50%; }
-                50% { background-position: 100% 50%; }
-            }
-            .animate-gradient {
-                animation: gradient 8s ease infinite;
-            }
-            .bg-size-200 {
-                background-size: 200% 200%;
-            }
-        }
-        </style>
+    <link rel="stylesheet" href="/static/css/app.css">
 </head>
-<body class="bg-gradient-to-br from-gray-50 to-violet-50 dark:from-dark-bg dark:to-violet-950/30 text-gray-800 dark:text-dark-text min-h-screen flex flex-col transition-colors duration-500">
+<body class="bg-slate-50 dark:bg-dark-bg text-slate-800 dark:text-dark-text h-screen overflow-hidden flex transition-colors duration-300">
 
-    <!-- 背景装饰 -->
-    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <!-- 动态渐变背景 -->
-        <div class="absolute inset-0 bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-dark-bg dark:to-violet-950/30 transition-colors duration-1000"></div>
-        
-        <!-- 动态光斑效果 -->
-        <div class="absolute top-0 left-1/4 w-96 h-96 bg-violet-400/20 dark:bg-violet-600/10 rounded-full blur-3xl animate-pulse-slow animate-float"></div>
-        <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-3xl animate-pulse-slow animate-float" style="animation-delay: 1s;"></div>
-        <div class="absolute top-1/2 right-1/3 w-64 h-64 bg-pink-400/15 dark:bg-pink-600/10 rounded-full blur-3xl animate-pulse-slow animate-float" style="animation-delay: 2s;"></div>
-        
-        <!-- 网格背景 -->
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtMS4zNiAwLTIuNC45NC0yLjQgMi4yNGMwIDEuMzYuOTggMi40IDIuNCAyLjRsMTMuNjQgMS4xN2MtMS4xNi42OC0yLjQ4IDEuMS0zLjk0IDEuMWMtMy41OSAwLTYuNS0yLjkyLTYuNS02LjUycy45Mi0yLjUgMi41LTQuMDggMy44MS01LjE3IDEuMTgtMS4xMiAyLjU5LTEuODcgNC4xMy0yLjI1IDMuMTQtLjc2IDYuOTQuMzggOC44IDEuMTIgMS44My43MyA0LjA0IDEuMjggNi40IDEuMjhzNi41LTIuOTIgNi41LTYuNTJzLS45Mi0yLjUtMi41LTQuMDgtMy44MS01LjE3LTEuMTgtMS4xMi0yLjU5LTEuODctNC4xMy0yLjI1LTMuMTQtLjc2LTYuOTQuMzgtOC44IDEuMTItMS44My43My00LjA0IDEuMjgtNi40IDEuMjh6IiBzdHJva2U9IiM4OGUyZmMiIHN0cm9rZS13aWR0aD0iLjUiLz48L2c+PC9zdmc+')] opacity-50 dark:opacity-20"></div>
+    <!-- Ambient Subtle Background -->
+    <div class="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+        <div class="absolute -top-24 left-1/4 w-[28rem] h-[28rem] bg-violet-400/15 dark:bg-violet-600/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-1/4 w-[24rem] h-[24rem] bg-indigo-400/15 dark:bg-indigo-600/10 rounded-full blur-3xl"></div>
     </div>
 
-    <!-- 顶部导航栏 -->
-    <header class="glass sticky top-0 z-50 border-b border-gray-200/50 dark:border-dark-border/50 transition-all duration-300">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="relative">
-                    <div class="w-11 h-11 bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/30">
-                        <i class="fa-solid fa-robot text-white text-xl"></i>
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-30 hidden lg:hidden"></div>
+
+    <!-- Left Sidebar -->
+    <aside id="sidebar" class="app-sidebar fixed lg:static inset-y-0 left-0 z-40 -translate-x-full lg:translate-x-0 flex flex-col bg-white/95 dark:bg-dark-surface/95 border-r border-slate-200/80 dark:border-dark-border shrink-0">
+        <!-- Brand & New Chat -->
+        <div class="p-4 border-b border-slate-200/70 dark:border-dark-border">
+            <div class="flex items-center justify-between mb-3.5">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-md shadow-violet-500/25 shrink-0">
+                        <i class="fa-solid fa-sparkles text-white text-sm"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h1 class="text-base font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400 truncate">
+                            解忧小铺
+                        </h1>
+                        <p class="text-[11px] text-slate-400 dark:text-slate-500 -mt-0.5 truncate">多模型 AI 智能助手</p>
                     </div>
                 </div>
-                <div class="hidden sm:block">
-                    <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400 tracking-tight">
-                        AI 智能助手
-                    </h1>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 -mt-0.5">随时为您效劳</p>
-                </div>
-            </div>
-
-            <div class="flex items-center space-x-2 sm:space-x-4">
-            <div class="relative group">
-                <div class="flex items-center bg-white dark:bg-dark-card rounded-xl px-3 py-1.5 border border-gray-200 dark:border-dark-border shadow-sm hover:shadow-md transition-all duration-200 backdrop-blur-sm">
-                    <div class="pl-2 pr-3 py-1 text-sm font-medium text-gray-500 dark:text-gray-400">
-                        <i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-violet-500 animate-pulse-slow"></i>
-                    </div>
-                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 mr-3">角色选择</span>
-                    <select id="model-select" class="appearance-none bg-transparent font-semibold text-gray-800 dark:text-white pl-1 pr-7 py-1.5 focus:outline-none cursor-pointer text-sm rounded-lg">
-                            <option value="deepseek" class="text-gray-900">Zoe</option>
-                            <option value="hunyuan" class="text-gray-900">Ethan</option>
-                            <option value="qwen" class="text-gray-900">Luna</option>
-                            <option value="glm" class="text-gray-900">Felix</option>
-                            <option value="doubao" class="text-gray-900">小Y</option>
-                        </select>
-                    <i class="fa-solid fa-chevron-down absolute right-3 text-xs text-gray-400 pointer-events-none transition-transform duration-300 group-hover:rotate-180"></i>
-                </div>
-
-                <div class="absolute top-full right-0 mt-3 w-72 bg-white dark:bg-dark-card rounded-2xl shadow-2xl border border-gray-100 dark:border-dark-border/50 p-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100 z-50 backdrop-blur-sm">
-                    <div class="flex items-center space-x-3 mb-3">
-                        <div id="model-icon-bg" class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md animate-float">
-                            <i id="model-icon" class="fa-solid fa-square-root-variable text-white"></i>
-                        </div>
-                        <div>
-                            <h4 id="model-title" class="font-bold text-gray-900 dark:text-white">Ethan</h4>
-                            <p class="text-xs text-violet-500 font-medium flex items-center">
-                                <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse mr-1.5"></span>
-                                在线
-                            </p>
-                        </div>
-                    </div>
-                    <p id="model-description" class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                        数学大师：精通各种数学问题，包括代数、几何、微积分等各个领域。
-                    </p>
-                </div>
-            </div>
-
-            <div class="flex items-center space-x-1 border-l border-gray-200 dark:border-gray-700 pl-2 sm:pl-4">
-                <button id="theme-toggle" class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400 hover:bg-white dark:hover:bg-dark-card shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-110" title="切换主题">
-                    <i class="fa-solid fa-moon text-lg"></i>
+                <button id="sidebar-close-mobile" class="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-dark-card">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
-                <button id="clear-chat" class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:text-rose-600 dark:text-gray-400 dark:hover:text-rose-400 hover:bg-white dark:hover:bg-dark-card shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-110" title="清除对话">
-                    <i class="fa-solid fa-trash-can text-lg"></i>
+            </div>
+
+            <button id="new-chat-btn" type="button" class="w-full py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-sm font-medium flex items-center justify-center gap-2 shadow-sm shadow-violet-500/25 transition-all active:scale-[0.98]">
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>新建对话</span>
+                <span class="ml-auto text-[10px] bg-white/20 px-1.5 py-0.5 rounded hidden sm:inline">Ctrl K</span>
+            </button>
+
+            <div class="relative mt-3">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                <input id="conv-search-input" type="text" placeholder="搜索历史对话..." class="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-slate-100/80 dark:bg-dark-card border border-transparent focus:border-violet-400 focus:bg-white dark:focus:bg-dark-card focus:outline-none transition-colors">
+            </div>
+        </div>
+
+        <!-- Conversation List -->
+        <div id="conversation-list" class="flex-1 overflow-y-auto px-2.5 py-3 space-y-4 scrollbar-custom">
+            <!-- Populated dynamically -->
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="p-3 border-t border-slate-200/70 dark:border-dark-border space-y-1.5">
+            <div class="flex items-center gap-1.5">
+                <button id="open-persona-studio-btn" type="button" class="flex-1 px-3 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-dark-card flex items-center gap-2 transition-colors">
+                    <i class="fa-solid fa-masks-theater text-violet-500"></i>
+                    <span>角色工坊</span>
+                </button>
+                <button id="open-settings-btn" type="button" class="px-3 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-dark-card flex items-center gap-1.5 transition-colors" title="对话参数与模型状态">
+                    <i class="fa-solid fa-sliders text-slate-400"></i>
+                    <span>设置</span>
+                </button>
+                <button id="clear-all-convs-btn" type="button" class="w-8 h-8 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center justify-center transition-colors" title="清空全部会话">
+                    <i class="fa-regular fa-trash-can text-xs"></i>
+                </button>
+            </div>
+
+            <!-- User / Guest Account Bar -->
+            <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-100/80 dark:bg-dark-card/90 border border-slate-200/60 dark:border-dark-border">
+                <button id="user-account-btn" type="button" class="flex items-center gap-2.5 min-w-0 flex-1 text-left">
+                    <div id="user-avatar" class="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-400 to-slate-500 text-white flex items-center justify-center text-xs font-bold shrink-0">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div id="user-display-name" class="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate">游客体验模式</div>
+                        <div id="user-status-label" class="text-[10px] text-violet-600 dark:text-violet-400 truncate">点击登录同步历史</div>
+                    </div>
+                </button>
+                <button id="logout-btn" type="button" class="hidden w-7 h-7 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-white dark:hover:bg-dark-surface flex items-center justify-center transition-colors" title="退出登录">
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
                 </button>
             </div>
         </div>
-        </div>
-    </header>
+    </aside>
 
-    <!-- 主要聊天区域 -->
-    <main class="flex-grow flex flex-col relative w-full max-w-4xl mx-auto">
-        <div id="toast-container" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
+    <!-- Main Workspace -->
+    <div class="flex-1 flex flex-col min-w-0 h-full relative">
+        <!-- Top Header -->
+        <header class="glass sticky top-0 z-20 border-b border-slate-200/70 dark:border-dark-border px-3 sm:px-5 py-2.5 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+                <button id="sidebar-toggle-btn" type="button" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:text-violet-600 hover:bg-slate-100 dark:hover:bg-dark-card transition-colors shrink-0" title="展开/收起侧边栏">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="min-w-0 hidden md:block">
+                    <h2 id="active-conv-title" class="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate max-w-[220px]">新对话</h2>
+                </div>
+            </div>
 
-        <button id="scroll-bottom-btn" class="absolute bottom-28 right-4 sm:right-6 w-12 h-12 bg-white dark:bg-dark-card rounded-full shadow-lg border border-gray-200 dark:border-dark-border flex items-center justify-center text-violet-500 hover:text-violet-600 hover:scale-110 transition-all opacity-0 invisible z-20">
-            <i class="fa-solid fa-arrow-down text-lg"></i>
+            <!-- Persona & Model Selectors -->
+            <div class="flex items-center gap-2 flex-wrap justify-end">
+                <div class="flex items-center bg-white dark:bg-dark-card rounded-xl px-2.5 py-1 border border-slate-200 dark:border-dark-border shadow-xs">
+                    <i class="fa-solid fa-masks-theater text-violet-500 text-xs mr-1.5"></i>
+                    <select id="persona-select" class="bg-transparent text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-100 focus:outline-none cursor-pointer pr-1" title="选择对话角色">
+                    </select>
+                </div>
+
+                <div class="flex items-center bg-white dark:bg-dark-card rounded-xl px-2.5 py-1 border border-slate-200 dark:border-dark-border shadow-xs">
+                    <span id="model-status-dot" class="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 shrink-0" title="模型状态"></span>
+                    <select id="model-select" class="bg-transparent text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-100 focus:outline-none cursor-pointer pr-1" title="选择底层模型">
+                    </select>
+                </div>
+
+                <!-- Export & Theme -->
+                <div class="flex items-center gap-1 border-l border-slate-200 dark:border-dark-border pl-2">
+                    <button id="export-md-btn" type="button" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-violet-600 hover:bg-slate-100 dark:hover:bg-dark-card transition-colors" title="导出为 Markdown">
+                        <i class="fa-solid fa-file-arrow-down text-sm"></i>
+                    </button>
+                    <button id="export-json-btn" type="button" class="w-8 h-8 rounded-lg hidden sm:flex items-center justify-center text-slate-500 hover:text-violet-600 hover:bg-slate-100 dark:hover:bg-dark-card transition-colors" title="导出为 JSON">
+                        <i class="fa-solid fa-code text-sm"></i>
+                    </button>
+                    <button id="theme-toggle" type="button" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-violet-600 hover:bg-slate-100 dark:hover:bg-dark-card transition-colors" title="切换亮色/暗色主题">
+                        <i class="fa-solid fa-moon text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Toast Container -->
+        <div id="toast-container" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+        <!-- Scroll to Bottom Floating Button -->
+        <button id="scroll-bottom-btn" type="button" class="absolute bottom-36 right-6 w-10 h-10 bg-white dark:bg-dark-card rounded-full shadow-lg border border-slate-200 dark:border-dark-border flex items-center justify-center text-violet-600 hover:scale-105 transition-all opacity-0 invisible z-20" title="回到底部">
+            <i class="fa-solid fa-arrow-down text-sm"></i>
         </button>
 
-        <!-- 聊天历史 -->
-        <div id="chat-history" class="flex-grow overflow-y-auto px-4 py-8 space-y-6 scroll-smooth scrollbar-custom">
-
-            <!-- 欢迎界面 -->
-            <div id="welcome-screen" class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-                <div class="relative mb-8">
-                    <div class="w-24 h-24 bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-violet-500/30 animate-float">
-                        <i class="fa-solid fa-robot text-white text-4xl"></i>
+        <!-- Chat Messages Container -->
+        <main id="chat-history" class="flex-1 overflow-y-auto px-3 sm:px-6 py-6 scrollbar-custom">
+            <div class="max-w-3xl mx-auto w-full">
+                <!-- Dynamic Welcome Screen -->
+                <div id="welcome-screen" class="flex flex-col items-center justify-center min-h-[58vh] text-center py-6">
+                    <div id="welcome-avatar" class="w-20 h-20 rounded-3xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-xl shadow-violet-500/20 mb-5">
+                        <i id="welcome-icon" class="fa-solid fa-comments text-white text-3xl"></i>
                     </div>
-                    <!-- 环绕光效 -->
-                    <div class="absolute inset-0 bg-gradient-to-r from-violet-500 to-indigo-600 rounded-3xl blur-md opacity-30 animate-pulse-slow"></div>
+                    <h2 id="welcome-title" class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mb-2">
+                        Zoe · 暖心搭子
+                    </h2>
+                    <p id="welcome-greeting" class="text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-lg mb-8 leading-relaxed">
+                        嗨，我是 Zoe！今天有没有什么开心或者吐槽的事想跟我分享呀？
+                    </p>
+                    <div id="welcome-starters" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                        <!-- Starter cards rendered dynamically -->
+                    </div>
                 </div>
 
-                <h2 class="text-3xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400 animate-gradient bg-size-200">
-                    你好，我是你的 AI 助手
-                </h2>
-                <p class="text-gray-500 dark:text-gray-400 max-w-lg mx-auto mb-10 text-base leading-relaxed animate-fade-in-up" style="animation-delay: 0.2s;">
-                    我能帮你解答问题、编写代码、分析数据，或者进行随意的闲聊。试试下方推荐，开启智能对话之旅吧！
-                </p>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-3xl">
-                    <button class="suggestion-btn group text-left p-5 rounded-2xl bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border hover:border-violet-400 dark:hover:border-violet-500 shadow-sm hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.3s;">
-                        <div class="flex items-center space-x-3 mb-2">
-                            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <i class="fa-solid fa-code text-blue-500"></i>
-                            </div>
-                            <span class="font-bold text-gray-800 dark:text-gray-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">编写代码</span>
-                        </div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 pl-[3.25rem]">帮我写一个用 Python 实现的快速排序算法</p>
-                    </button>
-
-                    <button class="suggestion-btn group text-left p-5 rounded-2xl bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border hover:border-violet-400 dark:hover:border-violet-500 shadow-sm hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.4s;">
-                        <div class="flex items-center space-x-3 mb-2">
-                            <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <i class="fa-solid fa-calculator text-emerald-500"></i>
-                            </div>
-                            <span class="font-bold text-gray-800 dark:text-gray-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">解答数学题</span>
-                        </div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 pl-[3.25rem]">解释一下什么是微积分中的极限概念</p>
-                    </button>
-
-                    <button class="suggestion-btn group text-left p-5 rounded-2xl bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border hover:border-violet-400 dark:hover:border-violet-500 shadow-sm hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.5s;">
-                        <div class="flex items-center space-x-3 mb-2">
-                            <div class="w-10 h-10 bg-pink-100 dark:bg-pink-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <i class="fa-solid fa-heart text-pink-500"></i>
-                            </div>
-                            <span class="font-bold text-gray-800 dark:text-gray-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">情感咨询</span>
-                        </div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 pl-[3.25rem]">我最近工作压力很大，感到很焦虑怎么办？</p>
-                    </button>
-
-                    <button class="suggestion-btn group text-left p-5 rounded-2xl bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border hover:border-violet-400 dark:hover:border-violet-500 shadow-sm hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.6s;">
-                        <div class="flex items-center space-x-3 mb-2">
-                            <div class="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <i class="fa-solid fa-yin-yang text-amber-500"></i>
-                            </div>
-                            <span class="font-bold text-gray-800 dark:text-gray-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">占卜运势</span>
-                        </div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 pl-[3.25rem]">帮我算一卦，看看最近的财运如何</p>
-                    </button>
-                </div>
+                <!-- Messages Feed -->
+                <div id="messages-list" class="space-y-6 pb-4"></div>
             </div>
+        </main>
 
-        </div>
-
-        <!-- 底部输入区域 -->
-        <div class="p-4 sm:p-6 bg-gradient-to-t from-gray-50/80 to-transparent dark:from-dark-bg/80 backdrop-blur-sm">
-            <div class="max-w-4xl mx-auto relative">
-                <form id="chat-form" class="relative bg-white dark:bg-dark-card rounded-3xl shadow-xl dark:shadow-2xl dark:shadow-violet-500/5 border border-gray-200 dark:border-dark-border/50 flex flex-col transition-all duration-300 focus-within:ring-2 focus-within:ring-violet-500/50 focus-within:border-violet-400 transform hover:shadow-2xl hover:shadow-violet-500/10">
-                    <textarea id="message-input" rows="1" placeholder="输入消息..."
-                           class="w-full bg-transparent px-6 py-4 max-h-40 min-h-[60px] resize-none focus:outline-none text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 scrollbar-hide text-base leading-relaxed"
-                           style="overflow-y: hidden;"></textarea>
-
-                    <div id="image-preview-container" class="hidden px-4 pb-2">
-                        <div class="flex flex-wrap gap-2" id="image-preview-list"></div>
+        <!-- Composer Footer -->
+        <footer class="px-3 sm:px-6 pb-4 pt-2 bg-gradient-to-t from-slate-50 via-slate-50/95 to-transparent dark:from-dark-bg dark:via-dark-bg/95">
+            <div class="max-w-3xl mx-auto">
+                <form id="chat-form" class="bg-white dark:bg-dark-card rounded-2xl shadow-lg shadow-slate-200/60 dark:shadow-none border border-slate-200/90 dark:border-dark-border transition-all focus-within:ring-2 focus-within:ring-violet-500/40 focus-within:border-violet-400">
+                    <!-- Image Attachment Preview -->
+                    <div id="image-preview-container" class="hidden px-4 pt-3">
+                        <div id="image-preview-list" class="flex flex-wrap gap-2"></div>
                     </div>
 
-                    <div class="flex justify-between items-center px-4 pb-4 pt-1">
-                        <div class="flex items-center space-x-2">
+                    <textarea
+                        id="message-input"
+                        rows="1"
+                        placeholder="输入消息，支持粘贴或拖拽图片，Enter 发送 / Shift+Enter 换行..."
+                        class="w-full bg-transparent px-4 pt-3.5 pb-2 max-h-44 min-h-[52px] resize-none focus:outline-none text-sm sm:text-[15px] text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 scrollbar-custom leading-relaxed"
+                    ></textarea>
+
+                    <!-- Composer Toolbar -->
+                    <div class="flex items-center justify-between gap-2 px-3 pb-2.5 pt-1">
+                        <div class="flex items-center gap-1.5 flex-wrap">
                             <input type="file" id="image-input" accept="image/*" multiple class="hidden">
-                            <button type="button" id="image-btn" class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:text-violet-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200" title="上传图片">
-                                <i class="fa-solid fa-image text-lg"></i>
+                            <button type="button" id="image-btn" class="h-8 px-2.5 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-violet-600 hover:bg-slate-100 dark:hover:bg-dark-surface flex items-center gap-1.5 transition-colors" title="上传图片（支持视觉理解与改图）">
+                                <i class="fa-regular fa-image"></i>
+                                <span class="hidden sm:inline">图片</span>
+                            </button>
+
+                            <button type="button" id="web-search-toggle" class="h-8 px-2.5 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-dark-surface flex items-center gap-1.5 transition-colors border border-transparent" title="切换联网搜索模式（自动 / 强制开启 / 关闭）">
+                                <i class="fa-solid fa-globe"></i>
+                                <span id="web-search-label">联网: 自动</span>
+                            </button>
+
+                            <button type="button" id="image-mode-toggle" class="h-8 px-2.5 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-dark-surface flex items-center gap-1.5 transition-colors border border-transparent" title="切换 AI 绘图模式">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span id="image-mode-label">绘图: 自动</span>
                             </button>
                         </div>
-                        <div class="text-xs text-gray-400 dark:text-gray-500 pl-2 hidden sm:flex items-center space-x-1">
-                            <span class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg text-[10px] border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Enter</span>
-                            <span>发送</span>
-                            <span class="mx-1 opacity-40">|</span>
-                            <span class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg text-[10px] border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Shift + Enter</span>
-                            <span>换行</span>
+
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span id="char-count" class="text-[11px] text-slate-400 hidden sm:inline"></span>
+                            <button type="button" id="stop-btn" class="hidden h-9 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-600 dark:text-rose-400 text-xs font-medium flex items-center gap-1.5 border border-rose-200 dark:border-rose-800/60 transition-colors" title="停止生成">
+                                <i class="fa-solid fa-stop"></i>
+                                <span>停止</span>
+                            </button>
+                            <button type="submit" id="send-btn" disabled class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white flex items-center justify-center shadow-sm shadow-violet-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95" title="发送 (Enter)">
+                                <i class="fa-solid fa-arrow-up text-sm"></i>
+                            </button>
                         </div>
-                        <button type="button" id="stop-btn" class="hidden w-11 h-11 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-900/20 dark:hover:bg-rose-900/40 text-rose-500 flex items-center justify-center transition-all duration-300 ml-auto border border-rose-200 dark:border-rose-800/50 hover:scale-105 hover:shadow-md" title="停止生成">
-                            <i class="fa-solid fa-stop text-sm"></i>
-                        </button>
-                        <button type="submit" id="send-btn" class="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 text-white flex items-center justify-center transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-violet-500/30 disabled:shadow-none ml-auto transform active:scale-95 hover:scale-105 disabled:hover:scale-100 hover:shadow-xl hover:shadow-violet-500/40">
-                            <i class="fa-solid fa-paper-plane text-sm transform hover:rotate-45 transition-transform"></i>
-                        </button>
                     </div>
                 </form>
-                <div class="text-center mt-4 text-[11px] text-gray-400 dark:text-gray-500 flex items-center justify-center space-x-1 animate-fade-in-up">
-                    <i class="fa-solid fa-shield-halved text-violet-500"></i>
-                    <span>AI 可能会产生不准确的信息，请仔细核查。</span>
+                <p class="text-center mt-2 text-[11px] text-slate-400 dark:text-slate-500">
+                    AI 生成内容仅供参考，请核查重要信息 · 会话已自动本地持久化
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal: Auth (Login / Register) -->
+    <div id="auth-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-dark-surface w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 dark:border-dark-border overflow-hidden animate-fade-in-up">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-dark-border">
+                <h3 class="text-base font-bold text-slate-800 dark:text-white">账号登录 / 注册</h3>
+                <button id="auth-modal-close" type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-dark-card flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="flex p-1 rounded-xl bg-slate-100 dark:bg-dark-card mb-5">
+                    <button id="auth-tab-login" type="button" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-white dark:bg-dark-surface text-violet-600 shadow-xs transition-all">登录</button>
+                    <button id="auth-tab-register" type="button" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-500 dark:text-slate-400 transition-all">注册新账号</button>
+                </div>
+
+                <div class="mb-4 px-3 py-2 rounded-xl bg-violet-50 dark:bg-violet-950/30 text-xs text-violet-700 dark:text-violet-300 flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>登录或注册后，当前游客模式下的对话和自定义角色会自动迁移到您的账号中。</span>
+                </div>
+
+                <form id="auth-form" class="space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">用户名</label>
+                        <input id="auth-username" type="text" required minlength="3" maxlength="32" placeholder="3-32位字母/数字/下划线" class="w-full px-3.5 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border focus:border-violet-500 focus:outline-none">
+                    </div>
+                    <div id="auth-display-name-wrap" class="hidden">
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">昵称（可选）</label>
+                        <input id="auth-display-name" type="text" maxlength="64" placeholder="展示在侧边栏的昵称" class="w-full px-3.5 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border focus:border-violet-500 focus:outline-none">
+                    </div>
+                    <div id="auth-email-wrap" class="hidden">
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">邮箱（可选）</label>
+                        <input id="auth-email" type="email" maxlength="128" placeholder="example@domain.com" class="w-full px-3.5 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border focus:border-violet-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">密码</label>
+                        <input id="auth-password" type="password" required minlength="6" maxlength="128" placeholder="至少 6 位密码" class="w-full px-3.5 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border focus:border-violet-500 focus:outline-none">
+                    </div>
+                    <p id="auth-error" class="hidden text-xs text-rose-500"></p>
+                    <button id="auth-submit-btn" type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-sm font-semibold shadow-sm transition-all">
+                        立即登录
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Persona Studio -->
+    <div id="persona-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-dark-surface w-full max-w-4xl max-h-[88vh] rounded-2xl shadow-2xl border border-slate-200 dark:border-dark-border flex flex-col overflow-hidden animate-fade-in-up">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-dark-border">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-masks-theater text-violet-500"></i>
+                    <h3 class="text-base font-bold text-slate-800 dark:text-white">角色工坊 · Persona Studio</h3>
+                </div>
+                <button id="persona-modal-close" type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-dark-card flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-dark-border scrollbar-custom">
+                <!-- Existing Personas -->
+                <div class="p-5 space-y-3">
+                    <div class="text-xs font-semibold uppercase tracking-wider text-slate-400">全部角色（点击直接启用）</div>
+                    <div id="persona-list" class="space-y-2.5"></div>
+                </div>
+
+                <!-- Create / Edit Custom Persona -->
+                <div class="p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 id="persona-form-title" class="text-sm font-bold text-slate-800 dark:text-white">创建自定义角色</h4>
+                        <button id="persona-reset-btn" type="button" class="text-xs text-slate-400 hover:text-violet-600">重置表单</button>
+                    </div>
+                    <form id="persona-form" class="space-y-3">
+                        <input type="hidden" id="persona-edit-id" value="">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">角色名称</label>
+                                <input id="persona-name" type="text" required maxlength="64" placeholder="如：架构师老王" class="w-full px-3 py-2 text-sm rounded-xl bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border focus:border-violet-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">头衔标签</label>
+                                <input id="persona-title" type="text" required maxlength="64" placeholder="如：后端专家" class="w-full px-3 py-2 text-sm rounded-xl bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border focus:border-violet-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">默认模型</label>
+                            <select id="persona-model" class="w-full px-3 py-2 text-sm rounded-xl bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border focus:border-violet-500 focus:outline-none"></select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">角色简介</label>
+                            <input id="persona-desc" type="text" maxlength="500" placeholder="一句话介绍角色擅长什么" class="w-full px-3 py-2 text-sm rounded-xl bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border focus:border-violet-500 focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">系统提示词 (System Prompt)</label>
+                            <textarea id="persona-prompt" required rows="5" maxlength="4000" placeholder="定义角色的身份、性格、回答风格和专业规则..." class="w-full px-3 py-2 text-sm rounded-xl bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border focus:border-violet-500 focus:outline-none resize-none"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">图标</label>
+                                <select id="persona-icon-picker" class="w-full px-3 py-2 text-sm rounded-xl bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border focus:outline-none">
+                                    <option value="fa-sparkles">✨ 灵感</option>
+                                    <option value="fa-code">💻 编程</option>
+                                    <option value="fa-graduation-cap">🎓 导师</option>
+                                    <option value="fa-pen-nib">✍️ 写作</option>
+                                    <option value="fa-briefcase">💼 职场</option>
+                                    <option value="fa-language">🌍 翻译</option>
+                                    <option value="fa-robot">🤖 助手</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">主题配色</label>
+                                <select id="persona-gradient-picker" class="w-full px-3 py-2 text-sm rounded-xl bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border focus:outline-none">
+                                    <option value="bg-gradient-to-br from-violet-500 to-indigo-600">紫罗兰</option>
+                                    <option value="bg-gradient-to-br from-blue-500 to-cyan-500">深海蓝</option>
+                                    <option value="bg-gradient-to-br from-emerald-500 to-teal-600">翡翠绿</option>
+                                    <option value="bg-gradient-to-br from-amber-500 to-orange-500">暖阳橙</option>
+                                    <option value="bg-gradient-to-br from-pink-500 to-rose-500">樱花粉</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button id="persona-submit-btn" type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-sm font-semibold shadow-sm transition-all">
+                            保存自定义角色
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
-    <script>
-
-        marked.setOptions({
-            highlight: function(code, lang) {
-                if (lang && hljs.getLanguage(lang)) {
-                    try {
-                        return hljs.highlight(code, { language: lang }).value;
-                    } catch (__) {}
-                }
-                return hljs.highlightAuto(code).value;
-            },
-            breaks: true,
-            gfm: true
-        });
-
-        const chatHistory = document.getElementById('chat-history');
-        const messageInput = document.getElementById('message-input');
-        const chatForm = document.getElementById('chat-form');
-        const sendBtn = document.getElementById('send-btn');
-        const stopBtn = document.getElementById('stop-btn');
-        const clearChatBtn = document.getElementById('clear-chat');
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const modelSelect = document.getElementById('model-select');
-        const modelDescription = document.getElementById('model-description');
-        const modelTitle = document.getElementById('model-title');
-        const modelIcon = document.getElementById('model-icon');
-        const modelIconBg = document.getElementById('model-icon-bg');
-        const welcomeScreen = document.getElementById('welcome-screen');
-        const suggestionBtns = document.querySelectorAll('.suggestion-btn');
-        const toastContainer = document.getElementById('toast-container');
-        const scrollBottomBtn = document.getElementById('scroll-bottom-btn');
-
-        const modelInfos = {
-            'deepseek': {
-                title: '暖心搭子',
-                desc: '聊天打字专家：擅长日常聊天和交流，能够自然、流畅地与用户进行对话。',
-                bg: 'bg-gradient-to-br from-amber-500 to-orange-500',
-                icon: 'fa-comments'
-            },
-            'qwen': {
-                title: '疗愈情感',
-                desc: '情感老师：擅长倾听和分析情感问题，给予温暖、专业的情感建议和心理支持。',
-                bg: 'bg-gradient-to-br from-pink-500 to-rose-500',
-                icon: 'fa-heart'
-            },
-            'glm': {
-                title: '算卦大师',
-                desc: '精通周易、占卜等传统预测术，给出富有洞察力的占卜结果和建议。',
-                bg: 'bg-gradient-to-br from-emerald-500 to-teal-600',
-                icon: 'fa-yin-yang'
-            },
-            'hunyuan': {
-                title: '数学天才',
-                desc: '数学大师：精通各种数学问题，包括代数、几何、微积分等各个领域。',
-                bg: 'bg-gradient-to-br from-blue-500 to-indigo-600',
-                icon: 'fa-square-root-variable'
-            },
-            'doubao': {
-                title: '绘画大师',
-                desc: '小Y：绘画大师，擅长各种绘画风格和图片编辑，能够根据用户的需求创作出精美的图片。',
-                bg: 'bg-gradient-to-br from-purple-500 to-violet-600',
-                icon: 'fa-paint-brush'
-            }
-        };
-
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            const icon = type === 'success' ? 'fa-circle-check text-green-500' : 'fa-circle-exclamation text-red-500';
-            toast.className = `bg-white dark:bg-dark-card border border-gray-200 dark:border-gray-700 shadow-xl rounded-2xl px-5 py-3 flex items-center space-x-3 animate-fade-in-up transition-all duration-300 transform hover:scale-105`;
-            toast.innerHTML = `
-                <i class="fa-solid ${icon} text-lg"></i>
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">${message}</span>
-            `;
-            toastContainer.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-4');
-                setTimeout(() => toast.remove(), 300);
-            }, 2000);
-        }
-
-        async function copyToClipboard(encodedText, btnElement) {
-            try {
-                const txt = document.createElement("textarea");
-                txt.innerHTML = encodedText;
-                const text = txt.value;
-
-                await navigator.clipboard.writeText(text);
-                showToast('已复制到剪贴板');
-
-                const icon = btnElement.querySelector('i');
-                const oldClass = icon.className;
-                icon.className = 'fa-solid fa-check text-green-500';
-                setTimeout(() => { icon.className = oldClass; }, 2000);
-            } catch (err) {
-                showToast('复制失败', 'error');
-            }
-        }
-
-        chatHistory.addEventListener('scroll', () => {
-            const distanceToBottom = chatHistory.scrollHeight - chatHistory.scrollTop - chatHistory.clientHeight;
-            if (distanceToBottom > 150) {
-                scrollBottomBtn.classList.remove('opacity-0', 'invisible');
-                scrollBottomBtn.classList.add('opacity-100', 'visible');
-            } else {
-                scrollBottomBtn.classList.add('opacity-0', 'invisible');
-                scrollBottomBtn.classList.remove('opacity-100', 'visible');
-            }
-        });
-
-        scrollBottomBtn.addEventListener('click', scrollToBottom);
-
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-            if(this.value.trim() === '') {
-                sendBtn.disabled = true;
-                sendBtn.classList.add('opacity-40');
-            } else {
-                sendBtn.disabled = false;
-                sendBtn.classList.remove('opacity-40');
-            }
-        });
-
-        sendBtn.disabled = true;
-
-        const imageInput = document.getElementById('image-input');
-        const imageBtn = document.getElementById('image-btn');
-        const imagePreviewContainer = document.getElementById('image-preview-container');
-        const imagePreviewList = document.getElementById('image-preview-list');
-
-        let uploadedImages = [];
-
-        imageBtn.addEventListener('click', () => {
-            imageInput.click();
-        });
-
-        imageInput.addEventListener('change', (e) => {
-            const files = Array.from(e.target.files);
-            files.forEach(file => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        uploadedImages.push(event.target.result);
-                        renderImagePreviews();
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-            e.target.value = '';
-        });
-
-        function renderImagePreviews() {
-            if (uploadedImages.length === 0) {
-                imagePreviewContainer.classList.add('hidden');
-                return;
-            }
-            imagePreviewContainer.classList.remove('hidden');
-            imagePreviewList.innerHTML = uploadedImages.map((img, index) => `
-                <div class="relative group">
-                    <img src="${img}" class="w-20 h-20 object-cover rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                    <button type="button" onclick="removeImage(${index})" class="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                        <i class="fa-solid fa-times"></i>
-                    </button>
+    <!-- Modal: Settings & Diagnostics -->
+    <div id="settings-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-dark-surface w-full max-w-lg max-h-[88vh] rounded-2xl shadow-2xl border border-slate-200 dark:border-dark-border flex flex-col overflow-hidden animate-fade-in-up">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-dark-border">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-violet-500"></i>
+                    <h3 class="text-base font-bold text-slate-800 dark:text-white">对话参数与系统状态</h3>
                 </div>
-            `).join('');
-        }
+                <button id="settings-modal-close" type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-dark-card flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
 
-        window.removeImage = function(index) {
-            uploadedImages.splice(index, 1);
-            renderImagePreviews();
-        };
-
-        function downloadImage(imageUrl) {
-            fetch(imageUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `generated-image-${Date.now()}.jpg`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    showToast('图片已下载');
-                })
-                .catch(error => {
-                    console.error('下载图片失败:', error);
-                    showToast('下载图片失败', 'error');
-                });
-        }
-
-        document.addEventListener('paste', (e) => {
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-            for (let item of items) {
-                if (item.kind === 'file' && item.type.startsWith('image/')) {
-                    const file = item.getAsFile();
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        uploadedImages.push(event.target.result);
-                        renderImagePreviews();
-                    };
-                    reader.readAsDataURL(file);
-                }
-            }
-        });
-
-        function addGeneratedImageToHistory(imageUrl, prompt) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'flex w-full animate-fade-in-up group';
-
-            const modelInfo = modelInfos[modelSelect.value];
-
-            messageDiv.innerHTML = `
-                <div class="flex max-w-3xl w-full">
-                    <div class="flex-shrink-0 mr-4">
-                        <div class="w-10 h-10 ${modelInfo.bg} rounded-2xl flex items-center justify-center shadow-lg text-white transform hover:scale-110 transition-transform duration-200 animate-float">
-                            <i class="fa-solid ${modelInfo.icon} text-sm"></i>
-                        </div>
+            <div class="p-6 overflow-y-auto space-y-5 scrollbar-custom">
+                <div>
+                    <div class="flex justify-between text-xs font-medium mb-1.5">
+                        <span class="text-slate-600 dark:text-slate-300">采样温度 (Temperature)</span>
+                        <span id="setting-temperature-val" class="text-violet-600 font-semibold">0.7</span>
                     </div>
-                    <div class="flex-grow min-w-0 pt-1 relative">
-                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center">
-                            <span class="flex items-center space-x-2">
-                                <span>${modelInfo.title}</span>
-                                <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
-                            </span>
-                        </div>
-                        <div class="bg-white dark:bg-dark-card rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm border border-gray-100 dark:border-dark-border/50">
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-3 italic">"${prompt}"</p>
-                            <div class="relative">
-                                <img src="${imageUrl}" class="max-w-full rounded-xl shadow-lg hover:shadow-xl transition-shadow cursor-pointer" onclick="window.open('${imageUrl}', '_blank')">
-                                <button onclick="downloadImage('${imageUrl}')" class="absolute bottom-2 right-2 w-10 h-10 bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm rounded-full flex items-center justify-center text-violet-500 hover:text-violet-600 shadow-md transition-all duration-300 opacity-0 group-hover:opacity-100">
-                                    <i class="fa-solid fa-download text-sm"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <input id="setting-temperature" type="range" min="0" max="1.5" step="0.1" value="0.7" class="w-full accent-violet-600">
+                    <p class="text-[11px] text-slate-400 mt-1">较低值回答更严谨稳定，较高值更有创意和发散性。</p>
                 </div>
-            `;
 
-            chatHistory.appendChild(messageDiv);
-            scrollToBottom();
-            resetInputState();
-        }
-
-        function addMessageToHistoryWithImages(sender, message, images) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'flex w-full animate-fade-in-up group';
-
-            if (sender === 'user') {
-                messageDiv.innerHTML = `
-                    <div class="flex max-w-3xl w-full justify-end ml-auto">
-                        <div class="flex-grow min-w-0 pt-1 mr-4 flex flex-col items-end">
-                            <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 text-right">用户</div>
-                            ${images && images.length > 0 ? `<div class="flex flex-wrap gap-2 mb-2 justify-end">${images.map(img => `<img src="${img}" class="max-w-48 max-h-48 object-cover rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">`).join('')}</div>` : ''}
-                            <div class="bg-gradient-to-br from-violet-500 to-indigo-600 text-white px-6 py-4 rounded-2xl rounded-tr-sm shadow-lg shadow-violet-500/20 break-words max-w-full text-[15px] leading-relaxed transition-transform hover:scale-[1.02] hover:shadow-xl hover:shadow-violet-500/30">
-                                ${message.replace(/\n/g, '<br>')}
-                            </div>
-                        </div>
-                        <div class="flex-shrink-0">
-                            <div class="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 rounded-2xl flex items-center justify-center shadow-md transform hover:scale-110 transition-transform duration-200">
-                                <i class="fa-solid fa-user text-gray-600 dark:text-gray-300 text-sm"></i>
-                            </div>
-                        </div>
+                <div>
+                    <div class="flex justify-between text-xs font-medium mb-1.5">
+                        <span class="text-slate-600 dark:text-slate-300">上下文记忆轮数 (Max Messages)</span>
+                        <span id="setting-max-history-val" class="text-violet-600 font-semibold">20</span>
                     </div>
-                `;
-            } else {
-                const modelInfo = modelInfos[modelSelect.value];
-                const escapedMessage = message.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-                messageDiv.innerHTML = `
-                    <div class="flex max-w-3xl w-full">
-                        <div class="flex-shrink-0 mr-4">
-                            <div class="w-10 h-10 ${modelInfo.bg} rounded-2xl flex items-center justify-center shadow-lg text-white transform hover:scale-110 transition-transform duration-200 animate-float">
-                                <i class="fa-solid ${modelInfo.icon} text-sm"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow min-w-0 pt-1 relative">
-                            <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center justify-between">
-                                <span class="flex items-center space-x-2">
-                                    <span>${modelInfo.title}</span>
-                                    <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
-                                </span>
-                                <button data-clipboard-text="${escapedMessage}" onclick="copyToClipboard(this.getAttribute('data-clipboard-text'), this)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-all p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transform hover:scale-110" title="复制回答">
-                                    <i class="fa-regular fa-copy text-sm"></i>
-                                </button>
-                            </div>
-                            <div class="bg-white dark:bg-dark-card rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm border border-gray-100 dark:border-dark-border/50 message-content markdown-body text-gray-800 dark:text-gray-200 hover:shadow-md transition-all duration-300" ${useTypeWriter ? 'style="opacity: 0"' : ''}>
-                                ${useTypeWriter ? '' : parseMarkdown(message)}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            chatHistory.appendChild(messageDiv);
-            scrollToBottom();
-        }
-
-        suggestionBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const text = btn.querySelector('p').textContent;
-                messageInput.value = text;
-                messageInput.dispatchEvent(new Event('input'));
-                messageInput.focus();
-            });
-        });
-
-        let currentAbortController = null;
-        let isTyping = false;
-        let conversationHistory = [];
-
-        chatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const message = messageInput.value.trim();
-            if (!message && uploadedImages.length === 0) return;
-
-            if (welcomeScreen && welcomeScreen.style.display !== 'none') {
-                welcomeScreen.style.display = 'none';
-            }
-
-            const hasImages = uploadedImages.length > 0;
-            const messageToSend = message || (hasImages ? '[用户发送了图片]' : '');
-
-            messageInput.value = '';
-            messageInput.style.height = 'auto';
-            sendBtn.classList.add('hidden');
-            stopBtn.classList.remove('hidden');
-            messageInput.disabled = true;
-
-            conversationHistory.push({ role: 'user', content: messageToSend });
-            addMessageToHistoryWithImages('user', messageToSend, uploadedImages);
-
-            const loadingId = addLoadingMessage();
-
-            currentAbortController = new AbortController();
-
-            try {
-                const selectedModel = modelSelect.value;
-
-                let requestBody = {
-                    message: messageToSend,
-                    model: selectedModel,
-                    history: conversationHistory
-                };
-
-                if (hasImages) {
-                    requestBody.images = uploadedImages;
-                }
-
-                const response = await fetch('/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody),
-                signal: currentAbortController.signal
-            });
-
-            if (!response.ok) throw new Error('网络请求失败');
-
-            const data = await response.json();
-
-            // 移除加载消息
-            removeLoadingMessage(loadingId);
-
-            // 显示思考过程
-            if (data.thinking) {
-                const thinkingId = addThinkingMessage(data.thinking);
-                
-                // 短暂延迟后隐藏思考过程并显示最终结果
-                setTimeout(() => {
-                    removeThinkingMessage(thinkingId);
-                    
-                    conversationHistory.push({ role: 'assistant', content: data.response });
-                    
-                    if (data.type === 'image') {
-                        addGeneratedImageToHistory(data.response, data.prompt || messageToSend);
-                    } else {
-                        addMessageToHistory('bot', data.response, true);
-                    }
-                }, 1000);
-            } else {
-                conversationHistory.push({ role: 'assistant', content: data.response });
-                
-                if (data.type === 'image') {
-                    addGeneratedImageToHistory(data.response, data.prompt || messageToSend);
-                } else {
-                    addMessageToHistory('bot', data.response, true);
-                }
-            }
-
-                uploadedImages = [];
-                renderImagePreviews();
-
-            } catch (error) {
-                console.error('错误:', error);
-                removeLoadingMessage(loadingId);
-                uploadedImages = [];
-                renderImagePreviews();
-
-                if (error.name === 'AbortError') {
-                    showToast('已停止生成', 'success');
-                    resetInputState();
-                } else {
-                    addMessageToHistory('bot', '抱歉，连接服务器失败。请检查后端服务是否正常运行。', false, true);
-                    resetInputState();
-                }
-            }
-        });
-
-        stopBtn.addEventListener('click', () => {
-            if (currentAbortController) {
-                currentAbortController.abort();
-            }
-            if (isTyping) {
-                isTyping = false;
-            }
-            resetInputState();
-        });
-
-        function resetInputState() {
-            sendBtn.classList.remove('hidden');
-            stopBtn.classList.add('hidden');
-            messageInput.disabled = false;
-            sendBtn.disabled = messageInput.value.trim() === '';
-            messageInput.focus();
-        }
-
-        function parseMarkdown(text) {
-            const rawHtml = marked.parse(text);
-            return DOMPurify.sanitize(rawHtml);
-        }
-
-        function addMessageToHistory(sender, message, useTypeWriter = false, isError = false) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'flex w-full animate-fade-in-up group';
-
-            if (sender === 'bot') {
-                const modelInfo = modelInfos[modelSelect.value];
-                const avatarBg = isError ? 'bg-gradient-to-br from-rose-500 to-red-600' : modelInfo.bg;
-                const avatarIcon = isError ? 'fa-triangle-exclamation' : modelInfo.icon;
-
-                const escapedMessage = message.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-                messageDiv.innerHTML = `
-                    <div class="flex max-w-3xl w-full">
-                        <div class="flex-shrink-0 mr-4">
-                            <div class="w-10 h-10 ${avatarBg} rounded-2xl flex items-center justify-center shadow-lg text-white transform hover:scale-110 transition-transform duration-200 animate-float">
-                                <i class="fa-solid ${avatarIcon} text-sm"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow min-w-0 pt-1 relative">
-                            <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center justify-between">
-                                <span class="flex items-center space-x-2">
-                                    <span>${modelInfo.title}</span>
-                                    <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
-                                </span>
-                                <button data-clipboard-text="${escapedMessage}" onclick="copyToClipboard(this.getAttribute('data-clipboard-text'), this)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-all p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transform hover:scale-110" title="复制回答">
-                                    <i class="fa-regular fa-copy text-sm"></i>
-                                </button>
-                            </div>
-                            <div class="bg-white dark:bg-dark-card rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm border border-gray-100 dark:border-dark-border/50 message-content markdown-body text-gray-800 dark:text-gray-200 hover:shadow-md transition-all duration-300" ${useTypeWriter ? 'style="opacity: 0"' : ''}>
-                                ${useTypeWriter ? '' : parseMarkdown(message)}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                messageDiv.innerHTML = `
-                    <div class="flex max-w-3xl w-full justify-end ml-auto">
-                        <div class="flex-grow min-w-0 pt-1 mr-4 flex flex-col items-end">
-                            <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 text-right">用户</div>
-                            <div class="bg-gradient-to-br from-violet-500 to-indigo-600 text-white px-6 py-4 rounded-2xl rounded-tr-sm shadow-lg shadow-violet-500/20 break-words max-w-full text-[15px] leading-relaxed transition-transform hover:scale-[1.02] hover:shadow-xl hover:shadow-violet-500/30">
-                                ${message.replace(/\n/g, '<br>')}
-                            </div>
-                        </div>
-                        <div class="flex-shrink-0">
-                            <div class="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 rounded-2xl flex items-center justify-center shadow-md transform hover:scale-110 transition-transform duration-200">
-                                <i class="fa-solid fa-user text-gray-600 dark:text-gray-300 text-sm"></i>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            chatHistory.appendChild(messageDiv);
-            scrollToBottom();
-
-            if (sender === 'bot' && useTypeWriter) {
-                const contentDiv = messageDiv.querySelector('.message-content');
-                contentDiv.style.opacity = '1';
-
-                const parsedHtml = parseMarkdown(message);
-                contentDiv.innerHTML = '';
-
-                let i = 0;
-                let isTag = false;
-                let text = '';
-                isTyping = true;
-
-                function typeWriter() {
-                    if (!isTyping || i >= parsedHtml.length) {
-                        isTyping = false;
-                        resetInputState();
-                        contentDiv.querySelectorAll('pre code').forEach((block) => {
-                            hljs.highlightElement(block);
-                        });
-                        scrollToBottom();
-                        return;
-                    }
-
-                    if (i < parsedHtml.length) {
-                        text += parsedHtml.charAt(i);
-                        contentDiv.innerHTML = text;
-
-                        if (parsedHtml.charAt(i) === '<') isTag = true;
-                        if (parsedHtml.charAt(i) === '>') isTag = false;
-
-                        i++;
-
-                        const distanceToBottom = chatHistory.scrollHeight - chatHistory.scrollTop - chatHistory.clientHeight;
-                        if (distanceToBottom < 50) {
-                            scrollToBottom();
-                        }
-
-                        if (isTag) {
-                            typeWriter();
-                        } else {
-                            setTimeout(typeWriter, 15);
-                        }
-                    }
-                }
-
-                typeWriter();
-            } else if (sender === 'bot') {
-                resetInputState();
-            }
-        }
-
-        function addLoadingMessage(customMessage) {
-            const loadingId = `loading-${Date.now()}`;
-            const loadingDiv = document.createElement('div');
-            loadingDiv.id = loadingId;
-            loadingDiv.className = 'flex w-full animate-fade-in-up';
-
-            const modelInfo = modelInfos[modelSelect.value];
-            const statusText = customMessage || '正在思考';
-
-            loadingDiv.innerHTML = `
-                <div class="flex max-w-3xl w-full">
-                    <div class="flex-shrink-0 mr-4">
-                        <div class="w-10 h-10 ${modelInfo.bg} rounded-2xl flex items-center justify-center shadow-lg text-white animate-pulse-slow">
-                            <i class="fa-solid ${modelInfo.icon} text-sm"></i>
-                        </div>
-                    </div>
-                    <div class="flex-grow min-w-0 pt-2">
-                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-                            <span>${modelInfo.title}</span>
-                            <span class="text-xs font-normal text-gray-400 ml-2 flex items-center">
-                                ${statusText}
-                                <span class="animate-pulse ml-1">...</span>
-                            </span>
-                        </div>
-                        <div class="bg-white dark:bg-dark-card rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm border border-gray-100 dark:border-dark-border/50 inline-flex space-x-2 items-center">
-                            <div class="w-2.5 h-2.5 bg-violet-400 rounded-full typing-dot"></div>
-                            <div class="w-2.5 h-2.5 bg-violet-400 rounded-full typing-dot"></div>
-                            <div class="w-2.5 h-2.5 bg-violet-400 rounded-full typing-dot"></div>
-                        </div>
-                    </div>
+                    <input id="setting-max-history" type="range" min="0" max="40" step="2" value="20" class="w-full accent-violet-600">
                 </div>
-            `;
 
-            chatHistory.appendChild(loadingDiv);
-            scrollToBottom();
-            return loadingId;
-        }
-
-        function removeLoadingMessage(loadingId) {
-            const loadingDiv = document.getElementById(loadingId);
-            if (loadingDiv) loadingDiv.remove();
-        }
-
-        function addThinkingMessage(thinkingText) {
-            const thinkingId = `thinking-${Date.now()}`;
-            const thinkingDiv = document.createElement('div');
-            thinkingDiv.id = thinkingId;
-            thinkingDiv.className = 'flex w-full animate-fade-in-up';
-
-            const modelInfo = modelInfos[modelSelect.value];
-
-            thinkingDiv.innerHTML = `
-                <div class="flex max-w-3xl w-full">
-                    <div class="flex-shrink-0 mr-4">
-                        <div class="w-10 h-10 ${modelInfo.bg} rounded-2xl flex items-center justify-center shadow-lg text-white animate-pulse-slow">
-                            <i class="fa-solid ${modelInfo.icon} text-sm"></i>
-                        </div>
-                    </div>
-                    <div class="flex-grow min-w-0 pt-2">
-                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-                            <span>${modelInfo.title}</span>
-                        </div>
-                        <div class="bg-white dark:bg-dark-card rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm border border-gray-100 dark:border-dark-border/50">
-                            <p class="text-gray-500 dark:text-gray-400 italic flex items-center">
-                                <i class="fa-solid fa-brain mr-2 text-violet-500 animate-pulse"></i>
-                                ${thinkingText}
-                            </p>
-                        </div>
-                    </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1.5">当前会话系统提示词覆盖（可选）</label>
+                    <textarea id="setting-system-prompt" rows="3" placeholder="留空则使用所选角色的默认 System Prompt" class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border focus:border-violet-500 focus:outline-none resize-none"></textarea>
                 </div>
-            `;
 
-            chatHistory.appendChild(thinkingDiv);
-            scrollToBottom();
-            return thinkingId;
-        }
+                <div>
+                    <div class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">服务提供商接入状态</div>
+                    <div id="provider-diagnostics" class="grid grid-cols-2 gap-2 text-xs"></div>
+                </div>
 
-        function removeThinkingMessage(thinkingId) {
-            const thinkingDiv = document.getElementById(thinkingId);
-            if (thinkingDiv) {
-                // 添加淡出动画
-                thinkingDiv.classList.add('opacity-0', 'translate-y-2', 'transition-all', 'duration-300');
-                setTimeout(() => {
-                    thinkingDiv.remove();
-                }, 300);
-            }
-        }
+                <button id="settings-save-btn" type="button" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-sm font-semibold shadow-sm transition-all">
+                    应用设置
+                </button>
+            </div>
+        </div>
+    </div>
 
-        function scrollToBottom() {
-            chatHistory.scrollTo({
-                top: chatHistory.scrollHeight,
-                behavior: 'smooth'
-            });
-        }
+    <!-- Modal: Image Lightbox -->
+    <div id="lightbox-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
+        <div class="relative max-w-5xl max-h-[90vh] flex flex-col items-center">
+            <div class="absolute -top-11 right-0 flex items-center gap-2">
+                <a id="lightbox-download" href="#" download class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs flex items-center gap-1.5 transition-colors">
+                    <i class="fa-solid fa-download"></i>
+                    <span>下载原图</span>
+                </a>
+                <button id="lightbox-close" type="button" class="w-8 h-8 rounded-lg bg-white/15 hover:bg-white/25 text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <img id="lightbox-img" src="" alt="预览图片" class="max-w-full max-h-[82vh] rounded-xl shadow-2xl object-contain">
+            <p id="lightbox-caption" class="mt-3 text-xs text-slate-300 text-center max-w-2xl"></p>
+        </div>
+    </div>
 
-        clearChatBtn.addEventListener('click', () => {
-            if (confirm('确定要清除所有对话记录吗？')) {
-                Array.from(chatHistory.children).forEach(child => {
-                    if (child.id !== 'welcome-screen') {
-                        child.remove();
-                    }
-                });
-                conversationHistory = []; // 清空对话历史
-                welcomeScreen.style.display = 'flex';
-                welcomeScreen.classList.remove('hidden');
-            }
-        });
-
-        // 初始化模型信息
-        function initModelInfo() {
-            const info = modelInfos[modelSelect.value];
-            modelTitle.textContent = info.title;
-            modelDescription.textContent = info.desc;
-            modelIcon.className = `fa-solid ${info.icon}`;
-            modelIconBg.className = `${info.bg} rounded-xl flex items-center justify-center shadow-md animate-float`;
-        }
-
-        // 页面加载时初始化
-        window.addEventListener('DOMContentLoaded', initModelInfo);
-
-        modelSelect.addEventListener('change', () => {
-            const info = modelInfos[modelSelect.value];
-            modelTitle.textContent = info.title;
-            modelDescription.textContent = info.desc;
-            modelIcon.className = `fa-solid ${info.icon}`;
-            modelIconBg.className = `${info.bg} rounded-xl flex items-center justify-center shadow-md animate-float`;
-            showToast(`已切换至 ${info.title}`);
-        });
-
-        const html = document.documentElement;
-
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            html.classList.add('dark');
-            updateThemeIcon(true);
-        } else {
-            html.classList.remove('dark');
-            updateThemeIcon(false);
-        }
-
-        themeToggleBtn.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            const isDark = html.classList.contains('dark');
-
-            if (isDark) {
-                localStorage.theme = 'dark';
-            } else {
-                localStorage.theme = 'light';
-            }
-
-            updateThemeIcon(isDark);
-        });
-
-        function updateThemeIcon(isDark) {
-            const icon = themeToggleBtn.querySelector('i');
-            if (isDark) {
-                icon.className = 'fa-solid fa-sun text-lg text-amber-400';
-            } else {
-                icon.className = 'fa-solid fa-moon text-lg';
-            }
-        }
-
-        messageInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                if (!sendBtn.disabled) {
-                    chatForm.dispatchEvent(new Event('submit'));
-                }
-            }
-        });
-    </script>
+    <script type="module" src="/static/js/app.js"></script>
 </body>
 </html>
