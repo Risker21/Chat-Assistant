@@ -24,8 +24,10 @@ const charCountEl = document.getElementById('char-count');
 const sidebar = document.getElementById('sidebar');
 const sidebarBackdrop = document.getElementById('sidebar-backdrop');
 const activeConvTitleEl = document.getElementById('active-conv-title');
-const personaSelect = document.getElementById('persona-select');
-const modelSelect = document.getElementById('model-select');
+const personaDropdownBtn = document.getElementById('persona-dropdown-btn');
+const personaDropdownMenu = document.getElementById('persona-dropdown-menu');
+const modelDropdownBtn = document.getElementById('model-dropdown-btn');
+const modelDropdownMenu = document.getElementById('model-dropdown-menu');
 const convSearchInput = document.getElementById('conv-search-input');
 
 const webSearchToggle = document.getElementById('web-search-toggle');
@@ -236,13 +238,44 @@ async function openConversation(conversationId) {
         store.settings.systemPromptOverride = detail.system_prompt_override || '';
 
         activeConvTitleEl.textContent = detail.title;
-        ui.renderSelectors();
+        renderHeaderSelectors();
         renderMessagesFeed();
         await refreshConversations();
         requestAnimationFrame(() => scrollToBottom(false));
     } catch (err) {
         ui.showToast(err.message, 'error');
     }
+}
+
+function closeHeaderDropdowns() {
+    personaDropdownMenu.classList.add('hidden');
+    personaDropdownBtn.setAttribute('aria-expanded', 'false');
+    modelDropdownMenu.classList.add('hidden');
+    modelDropdownBtn.setAttribute('aria-expanded', 'false');
+}
+
+function renderHeaderSelectors() {
+    ui.renderSelectors({
+        onSelectPersona: (persona) => {
+            store.selectedPersonaId = persona.id;
+            if (persona.default_model && store.models.some((m) => m.value === persona.default_model)) {
+                store.selectedModel = persona.default_model;
+            }
+            closeHeaderDropdowns();
+            renderHeaderSelectors();
+            if (!store.messages.length) renderMessagesFeed();
+            ui.showToast(`已切换角色：${persona.name}`);
+        },
+        onSelectModel: (model) => {
+            store.selectedModel = model.value;
+            closeHeaderDropdowns();
+            renderHeaderSelectors();
+            ui.showToast(
+                `已切换模型：${model.label}${model.configured ? '' : '（未配置 API Key）'}`,
+                model.configured ? 'success' : 'info'
+            );
+        },
+    });
 }
 
 function startNewChat() {
@@ -275,7 +308,7 @@ async function refreshPersonasAndModels() {
             store.selectedPersonaId = firstReady.default_persona_id;
         }
     }
-    ui.renderSelectors();
+    renderHeaderSelectors();
     ui.renderProviderDiagnostics();
 }
 
@@ -596,7 +629,7 @@ function renderPersonaStudio() {
         onActivate: (p) => {
             store.selectedPersonaId = p.id;
             if (p.default_model) store.selectedModel = p.default_model;
-            ui.renderSelectors();
+            renderHeaderSelectors();
             if (!store.messages.length) renderMessagesFeed();
             toggleModal('persona-modal', false);
             ui.showToast(`已切换角色：${p.name}`);
@@ -717,24 +750,38 @@ imageModeToggle.addEventListener('click', () => {
     updateComposerModeBadges();
 });
 
-// Selectors
-personaSelect.addEventListener('change', () => {
-    store.selectedPersonaId = personaSelect.value;
-    const persona = store.getActivePersona();
-    if (persona.default_model && store.models.some((m) => m.value === persona.default_model)) {
-        store.selectedModel = persona.default_model;
-        modelSelect.value = store.selectedModel;
-        ui.updateModelStatusDot();
+// Custom Persona & Model Dropdowns
+personaDropdownBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const willOpen = personaDropdownMenu.classList.contains('hidden');
+    closeHeaderDropdowns();
+    if (willOpen) {
+        personaDropdownMenu.classList.remove('hidden');
+        personaDropdownBtn.setAttribute('aria-expanded', 'true');
     }
-    if (!store.messages.length) renderMessagesFeed();
-    ui.showToast(`已切换角色：${persona.name}`);
 });
 
-modelSelect.addEventListener('change', () => {
-    store.selectedModel = modelSelect.value;
-    ui.updateModelStatusDot();
-    const info = store.getModelInfo(store.selectedModel);
-    ui.showToast(`已切换模型：${info.label}${info.configured ? '' : '（未配置 API Key）'}`, info.configured ? 'success' : 'info');
+modelDropdownBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const willOpen = modelDropdownMenu.classList.contains('hidden');
+    closeHeaderDropdowns();
+    if (willOpen) {
+        modelDropdownMenu.classList.remove('hidden');
+        modelDropdownBtn.setAttribute('aria-expanded', 'true');
+    }
+});
+
+document.getElementById('dropdown-open-studio-btn').addEventListener('click', () => {
+    closeHeaderDropdowns();
+    resetPersonaForm();
+    renderPersonaStudio();
+    toggleModal('persona-modal', true);
+});
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('#persona-dropdown') && !e.target.closest('#model-dropdown')) {
+        closeHeaderDropdowns();
+    }
 });
 
 // Scroll behavior
@@ -968,6 +1015,7 @@ document.addEventListener('keydown', (e) => {
         e.preventDefault();
         startNewChat();
     } else if (e.key === 'Escape') {
+        closeHeaderDropdowns();
         ui.closeLightbox();
         toggleModal('auth-modal', false);
         toggleModal('persona-modal', false);

@@ -48,38 +48,105 @@ export function closeLightbox() {
     modal.classList.remove('flex');
 }
 
-export function renderSelectors() {
-    const personaSelect = document.getElementById('persona-select');
-    const modelSelect = document.getElementById('model-select');
+export function renderSelectors(handlers = {}) {
+    const personaBtnBadge = document.getElementById('persona-btn-badge');
+    const personaBtnIcon = document.getElementById('persona-btn-icon');
+    const personaBtnLabel = document.getElementById('persona-btn-label');
+    const personaListEl = document.getElementById('persona-dropdown-list');
+
+    const modelBtnLabel = document.getElementById('model-btn-label');
+    const modelListEl = document.getElementById('model-dropdown-list');
     const personaFormModel = document.getElementById('persona-model');
 
-    if (personaSelect) {
-        personaSelect.innerHTML = store.personas
+    const activePersona = store.getActivePersona();
+    if (personaBtnBadge) {
+        personaBtnBadge.className = `w-5 h-5 rounded-md ${activePersona.bg_gradient || 'bg-gradient-to-br from-violet-500 to-indigo-600'} text-white flex items-center justify-center text-[10px] shrink-0`;
+    }
+    if (personaBtnIcon) {
+        personaBtnIcon.className = `fa-solid ${activePersona.icon || 'fa-sparkles'}`;
+    }
+    if (personaBtnLabel) {
+        personaBtnLabel.textContent = `${activePersona.name} · ${activePersona.title}`;
+    }
+
+    if (personaListEl) {
+        personaListEl.innerHTML = '';
+        store.personas.forEach((p) => {
+            const isSelected = p.id === store.selectedPersonaId;
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = `w-full text-left flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-colors ${
+                isSelected
+                    ? 'bg-violet-50 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300'
+                    : 'hover:bg-slate-100 dark:hover:bg-dark-card text-slate-700 dark:text-slate-200'
+            }`;
+            item.innerHTML = `
+                <span class="w-8 h-8 rounded-lg ${escapeHtml(p.bg_gradient)} text-white flex items-center justify-center text-xs shrink-0">
+                    <i class="fa-solid ${escapeHtml(p.icon || 'fa-sparkles')}"></i>
+                </span>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xs font-semibold truncate">${escapeHtml(p.name)}</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-dark-card text-slate-500 dark:text-slate-400 shrink-0">${escapeHtml(p.title)}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">${escapeHtml(p.description || p.system_prompt)}</p>
+                </div>
+                ${isSelected ? '<i class="fa-solid fa-check text-violet-600 dark:text-violet-400 text-xs shrink-0"></i>' : ''}
+            `;
+            item.addEventListener('click', () => {
+                if (typeof handlers.onSelectPersona === 'function') {
+                    handlers.onSelectPersona(p);
+                }
+            });
+            personaListEl.appendChild(item);
+        });
+    }
+
+    const activeModel = store.getModelInfo(store.selectedModel);
+    if (modelBtnLabel) {
+        modelBtnLabel.textContent = activeModel.label || store.selectedModel;
+    }
+
+    if (modelListEl) {
+        modelListEl.innerHTML = '';
+        store.models.forEach((m) => {
+            const isSelected = m.value === store.selectedModel;
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = `w-full text-left flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-colors ${
+                isSelected
+                    ? 'bg-violet-50 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300'
+                    : 'hover:bg-slate-100 dark:hover:bg-dark-card text-slate-700 dark:text-slate-200'
+            }`;
+            item.innerHTML = `
+                <span class="w-2 h-2 rounded-full ${m.configured ? 'bg-emerald-400' : 'bg-amber-400'} shrink-0"></span>
+                <div class="flex-1 min-w-0">
+                    <div class="text-xs font-semibold truncate">${escapeHtml(m.label)}</div>
+                    <div class="text-[10px] text-slate-400 truncate">${escapeHtml(m.model_name)}</div>
+                </div>
+                <span class="text-[10px] px-1.5 py-0.5 rounded-md shrink-0 ${
+                    m.configured
+                        ? 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400'
+                        : 'bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400'
+                }">${m.configured ? '已就绪' : '未配置'}</span>
+                ${isSelected ? '<i class="fa-solid fa-check text-violet-600 dark:text-violet-400 text-xs shrink-0"></i>' : ''}
+            `;
+            item.addEventListener('click', () => {
+                if (typeof handlers.onSelectModel === 'function') {
+                    handlers.onSelectModel(m);
+                }
+            });
+            modelListEl.appendChild(item);
+        });
+    }
+
+    if (personaFormModel) {
+        personaFormModel.innerHTML = store.models
             .map(
-                (p) =>
-                    `<option value="${escapeHtml(p.id)}" class="text-slate-900">${escapeHtml(p.name)} · ${escapeHtml(p.title)}${p.is_builtin ? '' : ' ★'}</option>`
+                (m) =>
+                    `<option value="${escapeHtml(m.value)}" class="text-slate-900">${escapeHtml(m.label)}${m.configured ? '' : ' (未配置Key)'}</option>`
             )
             .join('');
-        if (store.personas.some((p) => p.id === store.selectedPersonaId)) {
-            personaSelect.value = store.selectedPersonaId;
-        }
-    }
-
-    const modelOptionsHtml = store.models
-        .map(
-            (m) =>
-                `<option value="${escapeHtml(m.value)}" class="text-slate-900">${escapeHtml(m.label)}${m.configured ? '' : ' (未配置Key)'}</option>`
-        )
-        .join('');
-
-    if (modelSelect) {
-        modelSelect.innerHTML = modelOptionsHtml;
-        if (store.models.some((m) => m.value === store.selectedModel)) {
-            modelSelect.value = store.selectedModel;
-        }
-    }
-    if (personaFormModel) {
-        personaFormModel.innerHTML = modelOptionsHtml;
     }
 
     updateModelStatusDot();
@@ -90,10 +157,10 @@ export function updateModelStatusDot() {
     if (!dot) return;
     const info = store.getModelInfo(store.selectedModel);
     if (info.configured) {
-        dot.className = 'w-2 h-2 rounded-full bg-emerald-400 mr-1.5 shrink-0';
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-400 shrink-0';
         dot.title = `${info.label} (${info.model_name}) 已就绪`;
     } else {
-        dot.className = 'w-2 h-2 rounded-full bg-amber-400 mr-1.5 shrink-0';
+        dot.className = 'w-2 h-2 rounded-full bg-amber-400 shrink-0';
         dot.title = `${info.label} 尚未配置 API Key`;
     }
 }
