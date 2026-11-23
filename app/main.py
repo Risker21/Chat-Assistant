@@ -104,6 +104,8 @@ def create_app() -> FastAPI:
             response.headers["X-Process-Time-Ms"] = str(elapsed_ms)
             if remaining is not None:
                 response.headers["X-RateLimit-Remaining"] = str(remaining)
+            if path.startswith("/static/") and settings.environment != "production":
+                response.headers["Cache-Control"] = "no-cache"
             return response
         finally:
             request_id_ctx.reset(token)

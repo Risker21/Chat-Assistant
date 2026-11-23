@@ -1,9 +1,12 @@
-"""Lazy-loaded LLM client registry with provider availability checks."""
+"""Lazy-loaded OpenAI-compatible async LLM registry powered by httpx."""
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, AsyncGenerator, Dict, List, Optional
+
+import httpx
 
 from app.core.config import Settings, get_settings
 from app.core.logging import get_logger
@@ -38,6 +41,153 @@ class ModelNotConfiguredError(ModelError):
             code="MODEL_NOT_CONFIGURED",
             status_code=503,
         )
+
+
+@dataclass
+class StreamChunk:
+    """Minimal chunk object matching LangChain's `.content` convention."""
+
+    content: str
+
+
+def _serialize_messages(messages: List[Any]) -> List[Dict[str, Any]]:
+    """Convert LangChain BaseMessage objects or plain dicts to OpenAI Chat Completions format."""
+    serialized: List[Dict[str, Any]] = []
+    role_map = {
+        "system": "system",
+        "human": "user",
+        "user": "user",
+        "ai": "assistant",
+        "assistant": "assistant",
+    }
+    for msg in messages:
+        if isinstance(msg, dict):
+            role = role_map.get(str(msg.get("role", "user")).lower(), "user")
+            serialized.append({"role": role, "content": msg.get("content", "")})
+        else:
+            msg_type = getattr(msg, "type", "user")
+            role = role_map.get(str(msg_type).lower(), "user")
+            serialized.append({"role": role, "content": getattr(msg, "content", "")})
+    return serialized
+
+
+def _extract_upstream_error(status_code: int, body_text: str) -> str:
+    try:
+        data = json.loads(body_text)
+        if isinstance(data, dict):
+            err = data.get("error")
+            if isinstance(err, dict) and err.get("message"):
+                return f"上游模型返回错误 ({status_code}): {err['message']}"
+            if data.get("message"):
+                return f"上游模型返回错误 ({status_code}): {data['message']}"
+    except Exception:
+        pass
+    snippet = (body_text or "").strip()[:200]
+    return f"上游模型请求失败 (HTTP {status_code}){': ' + snippet if snippet else ''}"
+
+
+class OpenAICompatibleChatClient:
+    """Lightweight async streaming client for OpenAI-compatible Chat Completions APIs.
+
+    Works uniformly with DeepSeek, DashScope (Qwen / Qwen-VL), Zhipu GLM, Tencent Hunyuan,
+    and ByteDance Doubao/Ark without requiring the heavy `openai` or `langchain-openai` packages.
+    """
+
+    def __init__(
+        self,
+        *,
+        model: str,
+        api_key: str,
+        base_url: str,
+        temperature: float = 0.7,
+        timeout: int = 90,
+    ) -> None:
+        self.model = model
+        self.api_key = api_key.strip()
+        self.base_url = base_url.rstrip("/")
+        self.temperature = float(temperature)
+        self.timeout = timeout
+
+    def _endpoint(self) -> str:
+        if self.base_url.endswith("/chat/completions"):
+            return self.base_url
+        return f"{self.base_url}/chat/completions"
+
+    def _headers(self) -> Dict[str, str]:
+        return {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+            "Accept": "text/event-stream",
+        }
+
+    async def astream(self, messages: List[Any]) -> AsyncGenerator[StreamChunk, None]:
+        payload = {
+            "model": self.model,
+            "messages": _serialize_messages(messages),
+            "temperature": self.temperature,
+            "stream": True,
+        }
+        timeout = httpx.Timeout(connect=15.0, read=float(self.timeout), write=30.0, pool=15.0)
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            async with client.stream(
+                "POST", self._endpoint(), headers=self._headers(), json=payload
+            ) as response:
+                if response.status_code >= 400:
+                    err_body = (await response.aread()).decode("utf-8", errors="ignore")
+                    raise ModelError(
+                        _extract_upstream_error(response.status_code, err_body),
+                        code="UPSTREAM_API_ERROR",
+                        status_code=502,
+                    )
+
+                async for line in response.aiter_lines():
+                    line = line.strip()
+                    if not line or not line.startswith("data:"):
+                        continue
+                    data_str = line[5:].strip()
+                    if data_str == "[DONE]":
+                        break
+                    try:
+                        chunk_json = json.loads(data_str)
+                    except json.JSONDecodeError:
+                        continue
+                    choices = chunk_json.get("choices") or []
+                    if not choices:
+                        continue
+                    delta = choices[0].get("delta") or {}
+                    text = delta.get("content")
+                    if text:
+                        yield StreamChunk(content=str(text))
+
+    async def ainvoke(self, messages: List[Any]) -> StreamChunk:
+        payload = {
+            "model": self.model,
+            "messages": _serialize_messages(messages),
+            "temperature": self.temperature,
+            "stream": False,
+        }
+        timeout = httpx.Timeout(connect=15.0, read=float(self.timeout), write=30.0, pool=15.0)
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            response = await client.post(
+                self._endpoint(),
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                },
+                json=payload,
+            )
+            if response.status_code >= 400:
+                raise ModelError(
+                    _extract_upstream_error(response.status_code, response.text),
+                    code="UPSTREAM_API_ERROR",
+                    status_code=502,
+                )
+            data = response.json()
+            choices = data.get("choices") or []
+            if choices:
+                content = (choices[0].get("message") or {}).get("content", "")
+                return StreamChunk(content=str(content))
+            return StreamChunk(content="")
 
 
 @dataclass(frozen=True)
@@ -106,7 +256,6 @@ class ModelRegistry:
     def __init__(self, settings: Optional[Settings] = None) -> None:
         self._settings = settings
         self._clients: Dict[str, Any] = {}
-        self._vision_client: Optional[Any] = None
 
     @property
     def settings(self) -> Settings:
@@ -158,7 +307,7 @@ class ModelRegistry:
         return result
 
     def get_chat_client(self, model_id: str, temperature: float = 0.7) -> Any:
-        """Return a LangChain chat model instance for `model_id` configured with `temperature`."""
+        """Return an async OpenAI-compatible client for `model_id`."""
         if model_id not in MODEL_SPECS:
             raise ModelNotFoundError(model_id)
 
@@ -171,16 +320,12 @@ class ModelRegistry:
         if cache_key in self._clients:
             return self._clients[cache_key]
 
-        from langchain_openai import ChatOpenAI
-
-        client = ChatOpenAI(
+        client = OpenAICompatibleChatClient(
             model=model_name,
             api_key=api_key,
             base_url=base_url,
             temperature=float(temperature),
             timeout=self.settings.request_timeout_seconds,
-            max_retries=2,
-            streaming=True,
         )
         self._clients[cache_key] = client
         logger.info("Initialized LLM client model_id=%s model=%s", model_id, model_name)
@@ -196,16 +341,12 @@ class ModelRegistry:
         if cache_key in self._clients:
             return self._clients[cache_key]
 
-        from langchain_openai import ChatOpenAI
-
-        client = ChatOpenAI(
+        client = OpenAICompatibleChatClient(
             model=s.qwen_vision_model,
             api_key=s.dashscope_api_key,
             base_url=s.dashscope_base_url,
             temperature=float(temperature),
-            timeout=s.request_timeout_seconds,
-            max_retries=2,
-            streaming=True,
+            timeout=self.settings.request_timeout_seconds,
         )
         self._clients[cache_key] = client
         logger.info("Initialized Vision LLM client model=%s", s.qwen_vision_model)
@@ -222,7 +363,6 @@ class ModelRegistry:
 
     def clear_cache(self) -> None:
         self._clients.clear()
-        self._vision_client = None
 
 
 model_registry = ModelRegistry()

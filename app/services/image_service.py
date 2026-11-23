@@ -65,23 +65,40 @@ def _build_edit_prompt(image_description: str, edit_type: str, user_request: str
 
 
 def _generate_with_doubao_sync(prompt: str, size: str) -> str:
-    from openai import OpenAI
+    import httpx
 
     settings = get_settings()
     api_key = settings.effective_doubao_api_key
     if not api_key:
         raise ModelNotConfiguredError("豆包绘图", "DOUBAO_API_KEY")
 
-    client = OpenAI(base_url=settings.doubao_base_url, api_key=api_key)
-    response = client.images.generate(
-        model=settings.doubao_image_model,
-        prompt=prompt,
-        size=size,
-        response_format="url",
-        extra_body={"watermark": True, "quality": "high"},
+    url = f"{settings.doubao_base_url.rstrip('/')}/images/generations"
+    payload = {
+        "model": settings.doubao_image_model,
+        "prompt": prompt,
+        "size": size,
+        "response_format": "url",
+        "watermark": True,
+        "quality": "high",
+    }
+    resp = httpx.post(
+        url,
+        headers={
+            "Authorization": f"Bearer {api_key.strip()}",
+            "Content-Type": "application/json",
+        },
+        json=payload,
+        timeout=90.0,
     )
-    if response.data and response.data[0].url:
-        return response.data[0].url
+    if resp.status_code >= 400:
+        raise ModelError(
+            f"豆包绘图失败 (HTTP {resp.status_code}): {resp.text[:200]}",
+            code="IMAGE_GEN_FAILED",
+            status_code=502,
+        )
+    data = resp.json().get("data") or []
+    if data and data[0].get("url"):
+        return data[0]["url"]
     raise ModelError("豆包未能返回有效的图片链接", code="IMAGE_GEN_FAILED", status_code=502)
 
 
